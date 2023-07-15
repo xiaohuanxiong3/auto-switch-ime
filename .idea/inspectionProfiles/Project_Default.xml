@@ -1,0 +1,12 @@
+<component name="InspectionProjectProfileManager">
+  <profile version="1.0">
+    <option name="myName" value="Project Default" />
+    <inspection_tool class="MissingJavadoc" enabled="false" level="WARNING" enabled_by_default="false" editorAttributes="INFO_ATTRIBUTES">
+      <option name="PACKAGE_SETTINGS">
+        <Options>
+          <option name="REQUIRED_TAGS" value="@author@since@version" />
+        </Options>
+      </option>
+    </inspection_tool>
+  </profile>
+</component>
