@@ -25,10 +25,18 @@
     <!-- Extension points defined by the plugin.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
     <extensions defaultExtensionNs="com.intellij">
-        <projectService serviceImplementation="com.sqy.plugins.translate.service.TranslationUIManager"/>
+        <projectService serviceImplementation="com.sqy.plugins.translation.service.TranslationUIManager"/>
+        <applicationService serviceImplementation="com.sqy.plugins.translation.service.TranslationUIManager$AppService" />
+        <applicationService serviceImplementation="com.sqy.plugins.translation.service.TranslationService" />
+
+        <applicationConfigurable parentId="tools"
+                                 instance="com.sqy.plugins.translation.setting.TranslationConfigurable"
+                                 id="com.sqy.plugins.translation.setting.TranslationConfigurable"
+                                 displayName="Translate Settings" />
+        <applicationService serviceImplementation="com.sqy.plugins.translation.setting.TranslationSettings" />
     </extensions>
     <actions>
-        <action id="Self_Translate" class="com.sqy.plugins.translate.action.TranslateActionKt" text="translate"
+        <action id="Self_Translate" class="com.sqy.plugins.translation.action.TranslationActionKt" text="translate"
                 description="翻译选中的文本">
             <add-to-group group-id="EditorPopupMenu" anchor="first"/>
             <keyboard-shortcut keymap="$default" first-keystroke="ctrl T"/>

@@ -2,7 +2,7 @@ package com.sqy.plugins.icons
 
 import com.intellij.openapi.util.IconLoader
 import com.intellij.ui.JBColor
-import com.sqy.plugins.translate.ui.icon.SuspendIcon
+import com.sqy.plugins.translation.ui.icon.SuspendIcon
 import javax.swing.Icon
 
 object TranslationIcons {
