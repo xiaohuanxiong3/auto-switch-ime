@@ -32,7 +32,6 @@
         <!-- 翻译插件-->
 
         <!-- 自动切换输入法-->
-        <applicationService serviceImplementation="com.sqy.plugins.auto_switch_ime.SwitchIMEService" />
         <applicationService serviceImplementation="com.sqy.plugins.auto_switch_ime.EditorMap$EditorCaretListenerMap" />
         <applicationService serviceImplementation="com.sqy.plugins.auto_switch_ime.EditorMap$EditorPsiFileMap" />
         <!-- 自动切换输入法-->
