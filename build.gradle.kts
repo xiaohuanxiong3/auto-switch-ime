@@ -14,7 +14,8 @@ repositories {
 }
 
 dependencies {
-   implementation("io.github.microutils","kotlin-logging-jvm","2.0.11")
+    implementation("io.github.microutils","kotlin-logging-jvm","2.0.11")
+    implementation("net.java.dev.jna","jna","5.13.0")
 }
 
 // Configure Gradle IntelliJ Plugin

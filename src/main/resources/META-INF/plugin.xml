@@ -25,16 +25,26 @@
     <!-- Extension points defined by the plugin.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
     <extensions defaultExtensionNs="com.intellij">
+        <!-- 翻译插件-->
         <projectService serviceImplementation="com.sqy.plugins.translation.service.TranslationUIManager"/>
         <applicationService serviceImplementation="com.sqy.plugins.translation.service.TranslationUIManager$AppService" />
         <applicationService serviceImplementation="com.sqy.plugins.translation.service.TranslationService" />
+        <!-- 翻译插件-->
+
+        <!-- 自动切换输入法-->
+        <applicationService serviceImplementation="com.sqy.plugins.auto_switch_ime.SwitchIMEService" />
+        <applicationService serviceImplementation="com.sqy.plugins.auto_switch_ime.EditorMap$EditorCaretListenerMap" />
+        <applicationService serviceImplementation="com.sqy.plugins.auto_switch_ime.EditorMap$EditorPsiFileMap" />
+        <!-- 自动切换输入法-->
 
         <applicationConfigurable parentId="tools"
                                  instance="com.sqy.plugins.translation.setting.TranslationConfigurable"
                                  id="com.sqy.plugins.translation.setting.TranslationConfigurable"
                                  displayName="Translate Settings" />
         <applicationService serviceImplementation="com.sqy.plugins.translation.setting.TranslationSettings" />
+
     </extensions>
+
     <actions>
         <action id="Self_Translate" class="com.sqy.plugins.translation.action.TranslationActionKt" text="translate"
                 description="翻译选中的文本">
@@ -42,4 +52,15 @@
             <keyboard-shortcut keymap="$default" first-keystroke="ctrl T"/>
         </action>
     </actions>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- 自动切换输入法-->
+        <editorFactoryListener implementation="com.sqy.plugins.auto_switch_ime.CustomEditorFactoryListener"/>
+        <editorActionHandler action="EditorUp" implementationClass="com.sqy.plugins.auto_switch_ime.CustomMoveCaretHandler" />
+        <editorActionHandler action="EditorDown" implementationClass="com.sqy.plugins.auto_switch_ime.CustomMoveCaretHandler" />
+        <editorActionHandler action="EditorLeft" implementationClass="com.sqy.plugins.auto_switch_ime.CustomMoveCaretHandler" />
+        <editorActionHandler action="EditorRight" implementationClass="com.sqy.plugins.auto_switch_ime.CustomMoveCaretHandler" />
+        <enterHandlerDelegate implementation="com.sqy.plugins.auto_switch_ime.CustomEnterHandlerDelegate" />
+        <!-- 自动切换输入法-->
+    </extensions>
 </idea-plugin>
