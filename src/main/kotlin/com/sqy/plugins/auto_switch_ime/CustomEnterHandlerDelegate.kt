@@ -15,19 +15,12 @@ class CustomEnterHandlerDelegate : EnterHandlerDelegateAdapter() {
     private val psiFileMap : ConcurrentHashMap<Editor, PsiFile> = EditorMap.psiFileMap
 
     override fun preprocessEnter(file: PsiFile, editor: Editor, caretOffset: Ref<Int>, caretAdvance: Ref<Int>, dataContext: DataContext, originalHandler: EditorActionHandler?): EnterHandlerDelegate.Result {
-        caretListenerMap[editor]!!.caretPositionChange = 0
+        AutoSwitchIMEService.prepare(editor)
         return EnterHandlerDelegate.Result.Continue
     }
 
     override fun postProcessEnter(file: PsiFile, editor: Editor, dataContext: DataContext): EnterHandlerDelegate.Result {
-        val caretListener = caretListenerMap[editor]!!
-        val psiFile = caretListenerMap.getOrDefault(editor,null)
-        if (caretListener.caretPositionChange > 0) {
-            //
-            println("caretPositionChanged caused by enter action")
-            caretListener.caretPositionChange = 0
-        }
-
+        AutoSwitchIMEService.handle(editor,IMEChangeCause.Enter)
         return EnterHandlerDelegate.Result.Continue
     }
 }

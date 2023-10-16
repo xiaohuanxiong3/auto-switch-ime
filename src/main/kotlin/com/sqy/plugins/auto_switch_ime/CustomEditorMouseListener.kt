@@ -10,22 +10,12 @@ import java.util.concurrent.ConcurrentHashMap
 
 class CustomEditorMouseListener() : EditorMouseListener {
 
-    private val caretListenerMap : ConcurrentHashMap<Editor, SwitchIMECaretListener> = EditorMap.caretListenerMap
-    private val psiFileMap : ConcurrentHashMap<Editor, PsiFile> = EditorMap.psiFileMap
-
     override fun mousePressed(event: EditorMouseEvent) {
-        caretListenerMap[event.editor]!!.caretPositionChange = 0
+        AutoSwitchIMEService.prepare(event.editor)
     }
 
     override fun mouseClicked(event: EditorMouseEvent) {
-        val caretListener = caretListenerMap[event.editor]!!
-        val psiFile = caretListenerMap.getOrDefault(event.editor,null)
-        if (caretListener.caretPositionChange > 0) {
-            //
-            println("caretPositionChanged caused by mouse-press")
-            IMESwitchSupport.switchToZh()
-            caretListener.caretPositionChange = 0
-        }
+        AutoSwitchIMEService.handle(event.editor,IMEChangeCause.MouseClick)
     }
 
 }

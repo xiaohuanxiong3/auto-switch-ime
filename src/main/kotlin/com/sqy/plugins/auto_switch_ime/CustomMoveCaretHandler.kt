@@ -22,15 +22,9 @@ class CustomMoveCaretHandler : EditorActionHandler {
     }
 
     override fun doExecute(editor: Editor, caret: Caret?, dataContext: DataContext?) {
-        caretListenerMap[editor]!!.caretPositionChange = 0
+        AutoSwitchIMEService.prepare(editor)
         myOriginalHandler?.execute(editor, caret,dataContext)
-        val caretListener = caretListenerMap[editor]!!
-        val psiFile = caretListenerMap.getOrDefault(editor,null)
-        if (caretListener.caretPositionChange > 0) {
-            //
-            println("caretPositionChanged caused by caret-move one step")
-            caretListener.caretPositionChange = 0
-        }
+        AutoSwitchIMEService.handle(editor,IMEChangeCause.ONE_CARET_MOVE)
     }
 
     override fun isEnabledForCaret(editor: Editor, caret: Caret, dataContext: DataContext?): Boolean {
