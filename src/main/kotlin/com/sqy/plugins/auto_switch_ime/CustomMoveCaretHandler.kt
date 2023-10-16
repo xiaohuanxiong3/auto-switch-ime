@@ -7,6 +7,7 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.actionSystem.EditorActionHandler
 import com.intellij.openapi.editor.event.CaretListener
 import com.intellij.psi.PsiFile
+import com.sqy.plugins.support.IMESwitchSupport
 import java.util.concurrent.ConcurrentHashMap
 
 class CustomMoveCaretHandler : EditorActionHandler {

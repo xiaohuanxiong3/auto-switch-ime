@@ -10,7 +10,6 @@ import com.intellij.openapi.editor.ex.FocusChangeListener
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiFile
-import com.intellij.util.applyIf
 import com.intellij.util.ui.UIUtil
 import java.awt.event.FocusEvent
 import java.awt.event.KeyAdapter

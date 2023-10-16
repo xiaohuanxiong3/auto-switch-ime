@@ -1,9 +1,11 @@
 package com.sqy.plugins.auto_switch_ime
 
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.event.EditorMouseEvent
 import com.intellij.openapi.editor.event.EditorMouseListener
 import com.intellij.psi.PsiFile
+import com.sqy.plugins.support.IMESwitchSupport
 import java.util.concurrent.ConcurrentHashMap
 
 class CustomEditorMouseListener() : EditorMouseListener {
@@ -21,6 +23,7 @@ class CustomEditorMouseListener() : EditorMouseListener {
         if (caretListener.caretPositionChange > 0) {
             //
             println("caretPositionChanged caused by mouse-press")
+            IMESwitchSupport.switchToZh()
             caretListener.caretPositionChange = 0
         }
     }

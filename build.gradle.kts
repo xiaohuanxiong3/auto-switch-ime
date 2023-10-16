@@ -1,13 +1,18 @@
-import org.jetbrains.kotlin.gradle.internal.encodePluginOptions
+// import org.jetbrains.kotlin.gradle.internal.encodePluginOptions
 
 plugins {
     id("java")
-    id("org.jetbrains.kotlin.jvm") version "1.8.21"
-    id("org.jetbrains.intellij") version "1.8.0"
+    id("org.jetbrains.kotlin.jvm") version "1.9.20-Beta2"
+    id("org.jetbrains.intellij") version "1.16.0"
+    // kotlin("jvm") version "1.9.10"
 }
 
 group = "com.sqy"
 version = "1.0-SNAPSHOT"
+
+kotlin{
+    jvmToolchain(11)
+}
 
 repositories {
     mavenCentral()
@@ -40,17 +45,17 @@ tasks {
 
     patchPluginXml {
         sinceBuild.set("213")
-        untilBuild.set("223.*")
+        untilBuild.set("232.*")
     }
 
-    signPlugin {
-        certificateChain.set(System.getenv("CERTIFICATE_CHAIN"))
-        privateKey.set(System.getenv("PRIVATE_KEY"))
-        password.set(System.getenv("PRIVATE_KEY_PASSWORD"))
-    }
-
-    publishPlugin {
-        token.set(System.getenv("PUBLISH_TOKEN"))
-    }
+//    signPlugin {
+//        certificateChain.set(System.getenv("CERTIFICATE_CHAIN"))
+//        privateKey.set(System.getenv("PRIVATE_KEY"))
+//        password.set(System.getenv("PRIVATE_KEY_PASSWORD"))
+//    }
+//
+//    publishPlugin {
+//        token.set(System.getenv("PUBLISH_TOKEN"))
+//    }
 }
 

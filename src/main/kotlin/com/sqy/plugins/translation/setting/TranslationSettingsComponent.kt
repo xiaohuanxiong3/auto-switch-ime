@@ -5,7 +5,6 @@ import com.intellij.ui.IdeBorderFactory
 import com.intellij.ui.SimpleListCellRenderer
 import com.intellij.ui.components.labels.LinkLabel
 import com.intellij.ui.scale.JBUIScale
-import com.intellij.workspaceModel.storage.cpp.CppLanguage
 import com.sqy.plugins.translation.engine.TranslationEngineEnum
 import com.sqy.plugins.translation.ui.UI.migLayout
 import com.sqy.plugins.translation.ui.UI.migLayoutVertical
