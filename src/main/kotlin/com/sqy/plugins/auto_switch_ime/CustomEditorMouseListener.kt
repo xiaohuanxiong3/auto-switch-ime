@@ -15,7 +15,7 @@ class CustomEditorMouseListener() : EditorMouseListener {
     }
 
     override fun mouseClicked(event: EditorMouseEvent) {
-        AutoSwitchIMEService.handle(event.editor,IMEChangeCause.MouseClick)
+        AutoSwitchIMEService.handle(event.editor,CaretPositionChangeCause.MOUSE_CLIKED)
     }
 
 }

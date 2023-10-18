@@ -2,7 +2,6 @@ package com.sqy.plugins.auto_switch_ime
 
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.editor.event.CaretListener
 import com.intellij.psi.PsiFile
 import java.util.concurrent.ConcurrentHashMap
 

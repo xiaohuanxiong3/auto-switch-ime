@@ -11,16 +11,13 @@ import java.util.concurrent.ConcurrentHashMap
 
 class CustomEnterHandlerDelegate : EnterHandlerDelegateAdapter() {
 
-    private val caretListenerMap : ConcurrentHashMap<Editor, SwitchIMECaretListener> = EditorMap.caretListenerMap
-    private val psiFileMap : ConcurrentHashMap<Editor, PsiFile> = EditorMap.psiFileMap
-
     override fun preprocessEnter(file: PsiFile, editor: Editor, caretOffset: Ref<Int>, caretAdvance: Ref<Int>, dataContext: DataContext, originalHandler: EditorActionHandler?): EnterHandlerDelegate.Result {
         AutoSwitchIMEService.prepare(editor)
         return EnterHandlerDelegate.Result.Continue
     }
 
     override fun postProcessEnter(file: PsiFile, editor: Editor, dataContext: DataContext): EnterHandlerDelegate.Result {
-        AutoSwitchIMEService.handle(editor,IMEChangeCause.Enter)
+        AutoSwitchIMEService.handle(editor,CaretPositionChangeCause.ENTER)
         return EnterHandlerDelegate.Result.Continue
     }
 }

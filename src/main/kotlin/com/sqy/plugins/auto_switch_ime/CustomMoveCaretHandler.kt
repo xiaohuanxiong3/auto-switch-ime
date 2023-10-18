@@ -14,9 +14,6 @@ class CustomMoveCaretHandler : EditorActionHandler {
 
     private val myOriginalHandler : EditorActionHandler?
 
-    private val caretListenerMap : ConcurrentHashMap<Editor,SwitchIMECaretListener> = EditorMap.caretListenerMap
-    private val psiFileMap : ConcurrentHashMap<Editor, PsiFile> = EditorMap.psiFileMap
-
     constructor(originalHandler : EditorActionHandler) {
         myOriginalHandler = originalHandler
     }
@@ -24,7 +21,7 @@ class CustomMoveCaretHandler : EditorActionHandler {
     override fun doExecute(editor: Editor, caret: Caret?, dataContext: DataContext?) {
         AutoSwitchIMEService.prepare(editor)
         myOriginalHandler?.execute(editor, caret,dataContext)
-        AutoSwitchIMEService.handle(editor,IMEChangeCause.ONE_CARET_MOVE)
+        AutoSwitchIMEService.handle(editor,CaretPositionChangeCause.ONE_CARET_MOVE)
     }
 
     override fun isEnabledForCaret(editor: Editor, caret: Caret, dataContext: DataContext?): Boolean {

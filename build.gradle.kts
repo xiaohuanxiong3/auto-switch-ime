@@ -28,8 +28,8 @@ dependencies {
 intellij {
     version.set("2021.3.3")
     type.set("IC") // Target IDE Platform
+    plugins.set(listOf("com.intellij.java"))
 
-    plugins.set(listOf(/* Plugin Dependencies */))
 }
 
 tasks {
@@ -41,6 +41,10 @@ tasks {
     }
     withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
         kotlinOptions.jvmTarget = "11"
+    }
+
+    listBundledPlugins {
+
     }
 
     patchPluginXml {

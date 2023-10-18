@@ -60,6 +60,9 @@
         <editorActionHandler action="EditorLeft" implementationClass="com.sqy.plugins.auto_switch_ime.CustomMoveCaretHandler" />
         <editorActionHandler action="EditorRight" implementationClass="com.sqy.plugins.auto_switch_ime.CustomMoveCaretHandler" />
         <enterHandlerDelegate implementation="com.sqy.plugins.auto_switch_ime.CustomEnterHandlerDelegate" />
+        <typedHandler implementation="com.sqy.plugins.auto_switch_ime.CustomTypedDelegate" />
         <!-- 自动切换输入法-->
     </extensions>
+
+    <depends>com.intellij.java</depends>
 </idea-plugin>
