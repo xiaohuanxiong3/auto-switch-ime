@@ -7,7 +7,6 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.actionSystem.EditorActionHandler
 import com.intellij.openapi.util.Ref
 import com.intellij.psi.PsiFile
-import com.sqy.plugins.auto_switch_ime.areaDecide.AutoSwitchIMEService
 
 class CustomEnterHandlerDelegate : EnterHandlerDelegateAdapter() {
 

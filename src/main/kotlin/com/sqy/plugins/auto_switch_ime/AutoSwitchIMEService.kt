@@ -1,4 +1,4 @@
-package com.sqy.plugins.auto_switch_ime.areaDecide
+package com.sqy.plugins.auto_switch_ime
 
 import com.intellij.lang.Language
 import com.intellij.openapi.editor.Editor
@@ -7,9 +7,7 @@ import com.intellij.psi.PsiErrorElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.impl.source.tree.LeafPsiElement
-import com.sqy.plugins.auto_switch_ime.CaretPositionChangeCause
-import com.sqy.plugins.auto_switch_ime.EditorMap
-import com.sqy.plugins.auto_switch_ime.SwitchIMECaretListener
+import com.sqy.plugins.auto_switch_ime.areaDecide.AreaDeciderDelegate
 import com.sqy.plugins.support.IMESwitchSupport
 import java.util.concurrent.ConcurrentHashMap
 
@@ -51,9 +49,9 @@ object AutoSwitchIMEService {
     private fun handleMouseClick(language: Language, caretPositionChange : Int, psiElement: LeafPsiElement, isLineEnd : Boolean) {
         if (caretPositionChange > 0) {
             psiElement.let {
-                if (AreaDeciderDelegate.isCommentArea(language,it,isLineEnd)) {
+                if (AreaDeciderDelegate.isCommentArea(language, it, isLineEnd)) {
                     IMESwitchSupport.switchToZh()
-                } else if (AreaDeciderDelegate.isCodeArea(language,it,isLineEnd)){
+                } else if (AreaDeciderDelegate.isCodeArea(language, it, isLineEnd)){
                     IMESwitchSupport.switchToEn()
                 }
             }
@@ -67,9 +65,9 @@ object AutoSwitchIMEService {
         if (caretPositionChange > 0) {
             psiElement.let {
                 if (System.currentTimeMillis() - lastMoveTime > moveAllowInterval) {
-                    if (AreaDeciderDelegate.isCommentArea(language,it,isLineEnd)) {
+                    if (AreaDeciderDelegate.isCommentArea(language, it, isLineEnd)) {
                         IMESwitchSupport.switchToZh()
-                    } else if (AreaDeciderDelegate.isCodeArea(language,it,isLineEnd)){
+                    } else if (AreaDeciderDelegate.isCodeArea(language, it, isLineEnd)){
                         IMESwitchSupport.switchToEn()
                     }
                     lastMoveTime = System.currentTimeMillis()

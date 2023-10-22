@@ -2,7 +2,6 @@ package com.sqy.plugins.auto_switch_ime
 
 import com.intellij.openapi.editor.event.EditorMouseEvent
 import com.intellij.openapi.editor.event.EditorMouseListener
-import com.sqy.plugins.auto_switch_ime.areaDecide.AutoSwitchIMEService
 
 class CustomEditorMouseListener() : EditorMouseListener {
 

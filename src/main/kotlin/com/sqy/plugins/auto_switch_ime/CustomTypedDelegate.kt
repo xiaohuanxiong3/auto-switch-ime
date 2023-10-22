@@ -5,7 +5,6 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.fileTypes.FileType
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
-import com.sqy.plugins.auto_switch_ime.areaDecide.AutoSwitchIMEService
 
 class CustomTypedDelegate : TypedHandlerDelegate() {
 

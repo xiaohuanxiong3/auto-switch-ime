@@ -4,7 +4,6 @@ import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.editor.Caret
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.actionSystem.EditorActionHandler
-import com.sqy.plugins.auto_switch_ime.areaDecide.AutoSwitchIMEService
 
 class CustomMoveCaretHandler : EditorActionHandler {
 
