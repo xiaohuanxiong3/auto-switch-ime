@@ -1,14 +1,10 @@
 package com.sqy.plugins.auto_switch_ime
 
 import com.intellij.openapi.actionSystem.DataContext
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.editor.Caret
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.actionSystem.EditorActionHandler
-import com.intellij.openapi.editor.event.CaretListener
-import com.intellij.psi.PsiFile
-import com.sqy.plugins.support.IMESwitchSupport
-import java.util.concurrent.ConcurrentHashMap
+import com.sqy.plugins.auto_switch_ime.areaDecide.AutoSwitchIMEService
 
 class CustomMoveCaretHandler : EditorActionHandler {
 

@@ -20,7 +20,7 @@ repositories {
 
 dependencies {
     implementation("io.github.microutils","kotlin-logging-jvm","2.0.11")
-    implementation("net.java.dev.jna","jna","5.13.0")
+    //implementation("net.java.dev.jna","jna","5.13.0")
 }
 
 // Configure Gradle IntelliJ Plugin
@@ -28,7 +28,7 @@ dependencies {
 intellij {
     version.set("2021.3.3")
     type.set("IC") // Target IDE Platform
-    plugins.set(listOf("com.intellij.java"))
+    plugins.set(listOf("com.intellij.java","org.jetbrains.kotlin"))
 
 }
 

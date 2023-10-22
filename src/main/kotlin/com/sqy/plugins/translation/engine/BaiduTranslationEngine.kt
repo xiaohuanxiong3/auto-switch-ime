@@ -4,7 +4,6 @@ import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
 import com.intellij.util.io.DigestUtil
 import com.intellij.util.io.HttpRequests
-import com.jcraft.jsch.jce.MD5
 import com.sqy.plugins.icons.TranslationIcons
 import com.sqy.plugins.translation.TranslationResult
 import com.sqy.plugins.translation.TranslationResultException
@@ -80,7 +79,7 @@ object BaiduTranslationEngine : TranslationEngine {
     }
 
     private fun String.md5(): String {
-        MD5()
+        // MD5
         return with(DigestUtil.md5()) {
             update(toByteArray(Charsets.UTF_8))
             digest().toHexString()

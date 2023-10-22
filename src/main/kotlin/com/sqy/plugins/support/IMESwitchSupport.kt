@@ -16,6 +16,11 @@ object IMESwitchSupport {
         fun switchTo(key : String)
     }
 
+//    init {
+//        System.setProperty("jna.debug_load.jna", "true")
+//        System.setProperty("jna.debug_load", "true")
+//    }
+
     val LIBRARYWin = if (Platform.isWindows()) Native.load("libswitchIMEWin.dll",IMEWin::class.java)
     else null
 
