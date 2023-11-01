@@ -9,5 +9,15 @@ enum class PsiFileLanguage(
     val areaDecider: AreaDecider
 ) {
     JAVA(JavaLanguage.INSTANCE,JavaAreaDecider),
-    KOTLIN(KotlinLanguage.INSTANCE,KotlinAreaDecider)
+    KOTLIN(KotlinLanguage.INSTANCE,KotlinAreaDecider);
+
+    companion object {
+        fun getAreaDecider(language: Language) : AreaDecider? {
+            return values().filter {
+                it.language == language
+            }.takeIf {
+                it.isNotEmpty()
+            }?.get(0)?.areaDecider
+        }
+    }
 }

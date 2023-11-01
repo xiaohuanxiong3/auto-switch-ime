@@ -1,6 +1,7 @@
 package com.sqy.plugins.auto_switch_ime
 
 import com.intellij.lang.Language
+import com.intellij.lang.java.JavaLanguage
 import com.intellij.openapi.editor.Editor
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiErrorElement
@@ -9,6 +10,7 @@ import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.sqy.plugins.auto_switch_ime.areaDecide.AreaDeciderDelegate
 import com.sqy.plugins.support.IMESwitchSupport
+import org.jetbrains.kotlin.idea.KotlinLanguage
 import java.util.concurrent.ConcurrentHashMap
 
 object AutoSwitchIMEService {
@@ -84,9 +86,7 @@ object AutoSwitchIMEService {
             IMESwitchSupport.switchToEn()
         } else if(caretPositionChange > 1){
             psiElement.let {
-                // 似乎只有在 /** **/区会出现 caretPositionChange > 1 的情况
-                // 先无脑切中文吧
-                IMESwitchSupport.switchToZh()
+                AreaDeciderDelegate.handleEnterWhenMultipleCaretPositionChange(language, psiElement, isLineEnd)
             }
         }
     }

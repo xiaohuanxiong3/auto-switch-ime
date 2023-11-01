@@ -49,6 +49,7 @@ object JavaAreaDecider : AreaDecider {
     override fun isCodeArea(psiElement: LeafPsiElement, isLineEnd: Boolean): Boolean {
         if (psiElement is PsiIdentifier
             || psiElement.treeParent is PsiExpression
+            || psiElement.treeParent is PsiExpressionList
             || psiElement.treeParent is PsiStatement
             || isLineEnd && psiElement.treePrev != null
             && (psiElement.treePrev is PsiExpression
