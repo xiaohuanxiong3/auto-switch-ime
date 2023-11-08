@@ -3,6 +3,8 @@ package com.sqy.plugins.auto_switch_ime
 import com.intellij.lang.Language
 import com.intellij.lang.java.JavaLanguage
 import com.intellij.openapi.editor.Editor
+import com.intellij.openapi.editor.impl.EditorImpl
+import com.intellij.openapi.fileTypes.PlainTextLanguage
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiErrorElement
 import com.intellij.psi.PsiFile
@@ -30,6 +32,11 @@ object AutoSwitchIMEService {
         psiFile?.let {
             val language = psiFile.language
             val psiElement = psiFile.findElementAt(editor.caretModel.offset)
+            // 如果 psiElement为null
+            if (psiElement == null) {
+                handleSwitchWhenNullPsiElement(editor,language)
+                return
+            }
             psiElement.let {
                 it as? LeafPsiElement
             }?.let {
@@ -102,6 +109,36 @@ object AutoSwitchIMEService {
                 }
             }
         }
+    }
+
+    /**
+     * 当psiElement为null时，处理输入法切换
+     */
+    private fun handleSwitchWhenNullPsiElement(editor: Editor,language: Language) {
+        when(language) {
+            JavaLanguage.INSTANCE -> {
+                IMESwitchSupport.switchToEn()
+            }
+            KotlinLanguage.INSTANCE -> {
+                IMESwitchSupport.switchToEn()
+            }
+            PlainTextLanguage.INSTANCE -> {
+                val placeholder = "" + editor.let {
+                    it as? EditorImpl
+                }?.placeholder
+                when(placeholder) {
+                    // commit 输入git信息 区域，暂时不做处理
+                    "Commit Message" -> {
+
+                    }
+                    // editor转EditorImpl失败或 editor不是EditorImpl的实例 或 EditorImpl的placeholder为null
+                    "" -> {
+
+                    }
+                }
+            }
+        }
+
     }
 
     private fun isLineEnd(psiElement: PsiElement?) : Boolean {

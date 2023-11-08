@@ -40,7 +40,8 @@ object JavaAreaDecider : AreaDecider {
         }
         // 文档注释区行首
         if (psiElement.treePrev.toString() == "PsiDocToken:DOC_COMMENT_LEADING_ASTERISKS"
-            && psiElement.treeNext.toString() == "PsiDocToken:DOC_COMMENT_LEADING_ASTERISKS") {
+            && (psiElement.treeNext.toString() == "PsiDocToken:DOC_COMMENT_LEADING_ASTERISKS"
+                        || psiElement.treeNext.toString() == "PsiDocToken:DOC_COMMENT_END")) {
             return true
         }
         return false
