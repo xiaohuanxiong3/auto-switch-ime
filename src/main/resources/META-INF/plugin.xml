@@ -62,6 +62,9 @@
         <enterHandlerDelegate implementation="com.sqy.plugins.auto_switch_ime.CustomEnterHandlerDelegate" />
         <typedHandler implementation="com.sqy.plugins.auto_switch_ime.CustomTypedDelegate" />
         <!-- 自动切换输入法-->
+        <!-- 自定义复制粘贴处理-->
+        <copyPastePreProcessor implementation="com.sqy.plugins.copy.CustomCopyPastePreProcessor" />
+        <!-- 自定义复制粘贴处理-->
     </extensions>
 
     <depends>com.intellij.java</depends>

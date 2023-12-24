@@ -52,6 +52,7 @@ object JavaAreaDecider : AreaDecider {
             || psiElement.treeParent is PsiExpression
             || psiElement.treeParent is PsiExpressionList
             || psiElement.treeParent is PsiStatement
+            || (!isLineEnd && psiElement is PsiWhiteSpace)
             || isLineEnd && psiElement.treePrev != null
             && (psiElement.treePrev is PsiExpression
                     || psiElement.treePrev is PsiStatement
