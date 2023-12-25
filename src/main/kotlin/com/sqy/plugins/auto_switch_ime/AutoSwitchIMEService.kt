@@ -13,6 +13,7 @@ import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.sqy.plugins.auto_switch_ime.areaDecide.AreaDeciderDelegate
 import com.sqy.plugins.support.IMESwitchSupport
 import org.jetbrains.kotlin.idea.KotlinLanguage
+import org.jetbrains.kotlin.psi.psiUtil.startOffset
 import java.util.concurrent.ConcurrentHashMap
 
 object AutoSwitchIMEService {
@@ -29,9 +30,9 @@ object AutoSwitchIMEService {
     fun handle(editor: Editor,cause: CaretPositionChangeCause) {
         val caretListener = caretListenerMap[editor]!!
         val psiFile = psiFileMap.getOrDefault(editor,null)
-        psiFile?.let {
-            val language = psiFile.language
-            val psiElement = psiFile.findElementAt(editor.caretModel.offset)
+        psiFile?.let { file ->
+            val language = file.language
+            val psiElement = file.findElementAt(editor.caretModel.offset)
             // 如果 psiElement为null
             if (psiElement == null) {
                 handleSwitchWhenNullPsiElement(editor,language)
@@ -40,7 +41,7 @@ object AutoSwitchIMEService {
             psiElement.let {
                 it as? LeafPsiElement
             }?.let {
-                val isLineEnd = isLineEnd(psiElement)
+                val isLineEnd = isLineEnd(editor.caretModel.offset,psiElement)
                 when(cause) {
                     CaretPositionChangeCause.MOUSE_CLIKED -> handleMouseClick(language,caretListener.caretPositionChange,it,isLineEnd)
                     CaretPositionChangeCause.ONE_CARET_MOVE -> handleOneCaretMove(language,caretListener.caretPositionChange,it,isLineEnd)
@@ -141,8 +142,8 @@ object AutoSwitchIMEService {
 
     }
 
-    private fun isLineEnd(psiElement: PsiElement?) : Boolean {
+    private fun isLineEnd(offset : Int, psiElement: PsiElement?) : Boolean {
         return psiElement is PsiWhiteSpace &&
-                psiElement.text.contains("\n")
+                (offset <= psiElement.startOffset + psiElement.text.indexOf("\n"))
     }
 }
