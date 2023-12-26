@@ -1,7 +1,9 @@
 package com.sqy.plugins.auto_switch_ime
 
+import com.intellij.injected.editor.EditorWindow
 import com.intellij.lang.Language
 import com.intellij.lang.java.JavaLanguage
+import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.fileTypes.PlainTextLanguage
@@ -13,6 +15,7 @@ import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.sqy.plugins.auto_switch_ime.areaDecide.AreaDeciderDelegate
 import com.sqy.plugins.support.IMESwitchSupport
 import org.jetbrains.kotlin.idea.KotlinLanguage
+import org.jetbrains.kotlin.psi.psiUtil.startOffset
 import java.util.concurrent.ConcurrentHashMap
 
 object AutoSwitchIMEService {
@@ -22,11 +25,31 @@ object AutoSwitchIMEService {
     private var lastMoveTime : Long = 0
     private val moveAllowInterval : Long = 300
 
+    private val logger : Logger = Logger.getInstance(AutoSwitchIMEService::class.java)
+
     fun prepare(editor: Editor) {
-        caretListenerMap[editor]!!.caretPositionChange = 0
+        try {
+            val targetEditor = editor.let {
+                it as? EditorWindow
+            }?.delegate?:editor
+            caretListenerMap[targetEditor]!!.caretPositionChange = 0
+        } catch (error : Throwable) {
+            logger.error("caught error in prepare method",error)
+        }
     }
 
     fun handle(editor: Editor,cause: CaretPositionChangeCause) {
+        try {
+            val targetEditor = editor.let {
+                it as? EditorWindow
+            }?.delegate?:editor
+            doHandle(targetEditor, cause)
+        } catch (error : Throwable) {
+            logger.error("caught error in handle method",error)
+        }
+    }
+
+    private fun doHandle(editor: Editor, cause: CaretPositionChangeCause) {
         val caretListener = caretListenerMap[editor]!!
         val psiFile = psiFileMap.getOrDefault(editor,null)
         psiFile?.let {
@@ -40,7 +63,7 @@ object AutoSwitchIMEService {
             psiElement.let {
                 it as? LeafPsiElement
             }?.let {
-                val isLineEnd = isLineEnd(psiElement)
+                val isLineEnd = isLineEnd(editor.caretModel.offset,psiElement)
                 when(cause) {
                     CaretPositionChangeCause.MOUSE_CLIKED -> handleMouseClick(language,caretListener.caretPositionChange,it,isLineEnd)
                     CaretPositionChangeCause.ONE_CARET_MOVE -> handleOneCaretMove(language,caretListener.caretPositionChange,it,isLineEnd)
@@ -141,8 +164,8 @@ object AutoSwitchIMEService {
 
     }
 
-    private fun isLineEnd(psiElement: PsiElement?) : Boolean {
+    private fun isLineEnd(offset : Int, psiElement: PsiElement?) : Boolean {
         return psiElement is PsiWhiteSpace &&
-                psiElement.text.contains("\n")
+                (offset <= psiElement.startOffset + psiElement.text.indexOf("\n"))
     }
 }
