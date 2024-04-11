@@ -15,7 +15,6 @@ import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.sqy.plugins.auto_switch_ime.areaDecide.AreaDeciderDelegate
 import com.sqy.plugins.support.IMESwitchSupport
 import org.jetbrains.kotlin.idea.KotlinLanguage
-import org.jetbrains.kotlin.psi.psiUtil.startOffset
 import java.util.concurrent.ConcurrentHashMap
 
 object AutoSwitchIMEService {
@@ -51,6 +50,9 @@ object AutoSwitchIMEService {
 
     private fun doHandle(editor: Editor, cause: CaretPositionChangeCause) {
         val caretListener = caretListenerMap[editor]!!
+        if (caretListener.caretPositionChange <= 0) {
+            return
+        }
         val psiFile = psiFileMap.getOrDefault(editor,null)
         psiFile?.let { file ->
             val language = file.language
@@ -63,12 +65,12 @@ object AutoSwitchIMEService {
             psiElement.let {
                 it as? LeafPsiElement
             }?.let {
-                val isLineEnd = isLineEnd(editor.caretModel.offset,psiElement)
+                val isLineEnd = isLineEnd(editor.caretModel.offset,psiElement,cause)
                 when(cause) {
-                    CaretPositionChangeCause.MOUSE_CLIKED -> handleMouseClick(language,caretListener.caretPositionChange,it,isLineEnd)
-                    CaretPositionChangeCause.ONE_CARET_MOVE -> handleOneCaretMove(language,caretListener.caretPositionChange,it,isLineEnd)
+                    CaretPositionChangeCause.MOUSE_CLIKED -> handleMouseClick(language,it,isLineEnd)
+                    CaretPositionChangeCause.ONE_CARET_MOVE -> handleOneCaretMove(language,it,isLineEnd)
                     CaretPositionChangeCause.ENTER -> handleEnter(language,caretListener.caretPositionChange,it,isLineEnd)
-                    CaretPositionChangeCause.TYPED -> handleType(language,caretListener.caretPositionChange,it,isLineEnd)
+                    CaretPositionChangeCause.TYPED -> handleType(language,it,isLineEnd)
                     else -> {}
                 }
             }
@@ -78,14 +80,12 @@ object AutoSwitchIMEService {
     /**
      * 处理鼠标点击引起的光标移动
      */
-    private fun handleMouseClick(language: Language, caretPositionChange : Int, psiElement: LeafPsiElement, isLineEnd : Boolean) {
-        if (caretPositionChange > 0) {
-            psiElement.let {
-                if (AreaDeciderDelegate.isCommentArea(language, it, isLineEnd)) {
-                    IMESwitchSupport.switchToZh()
-                } else if (AreaDeciderDelegate.isCodeArea(language, it, isLineEnd)){
-                    IMESwitchSupport.switchToEn()
-                }
+    private fun handleMouseClick(language: Language, psiElement: LeafPsiElement, isLineEnd : Boolean) {
+        psiElement.let {
+            if (AreaDeciderDelegate.isCommentArea(language, it, isLineEnd)) {
+                IMESwitchSupport.switchToZh()
+            } else if (AreaDeciderDelegate.isCodeArea(language, it, isLineEnd)){
+                IMESwitchSupport.switchToEn()
             }
         }
     }
@@ -93,17 +93,15 @@ object AutoSwitchIMEService {
     /**
      * 处理按下方向键引起的光标移动
      */
-    private fun handleOneCaretMove(language: Language, caretPositionChange : Int, psiElement: LeafPsiElement, isLineEnd : Boolean) {
-        if (caretPositionChange > 0) {
-            psiElement.let {
-                if (System.currentTimeMillis() - lastMoveTime > moveAllowInterval) {
-                    if (AreaDeciderDelegate.isCommentArea(language, it, isLineEnd)) {
-                        IMESwitchSupport.switchToZh()
-                    } else if (AreaDeciderDelegate.isCodeArea(language, it, isLineEnd)){
-                        IMESwitchSupport.switchToEn()
-                    }
-                    lastMoveTime = System.currentTimeMillis()
+    private fun handleOneCaretMove(language: Language, psiElement: LeafPsiElement, isLineEnd : Boolean) {
+        psiElement.let {
+            if (System.currentTimeMillis() - lastMoveTime > moveAllowInterval) {
+                if (AreaDeciderDelegate.isCommentArea(language, it, isLineEnd)) {
+                    IMESwitchSupport.switchToZh()
+                } else if (AreaDeciderDelegate.isCodeArea(language, it, isLineEnd)){
+                    IMESwitchSupport.switchToEn()
                 }
+                lastMoveTime = System.currentTimeMillis()
             }
         }
     }
@@ -124,12 +122,10 @@ object AutoSwitchIMEService {
     /**
      * 处理 输入字符引起的光标移动，主要是检测以//开头的注释
      */
-    private fun handleType(language: Language, caretPositionChange : Int, psiElement: LeafPsiElement, isLineEnd : Boolean) {
-        if (caretPositionChange > 0) {
-            psiElement.let {
-                if (isLineEnd && psiElement.treePrev is PsiErrorElement) {
-                    IMESwitchSupport.switchToZh()
-                }
+    private fun handleType(language: Language, psiElement: LeafPsiElement, isLineEnd : Boolean) {
+        psiElement.let {
+            if (isLineEnd && psiElement.treePrev is PsiErrorElement) {
+                IMESwitchSupport.switchToZh()
             }
         }
     }
@@ -164,8 +160,10 @@ object AutoSwitchIMEService {
 
     }
 
-    private fun isLineEnd(offset : Int, psiElement: PsiElement?) : Boolean {
-        return psiElement is PsiWhiteSpace &&
-                (offset <= psiElement.startOffset + psiElement.text.indexOf("\n"))
+    // 判断光标是否在行尾
+    private fun isLineEnd(offset : Int, psiElement: PsiElement?, cause: CaretPositionChangeCause) : Boolean {
+        return psiElement is PsiWhiteSpace
+                && psiElement.text.contains("\n")
+                && psiElement.textRange.endOffset - psiElement.text.length + (( if (cause == CaretPositionChangeCause.TYPED)  1 else 0 )) <= offset
     }
 }
