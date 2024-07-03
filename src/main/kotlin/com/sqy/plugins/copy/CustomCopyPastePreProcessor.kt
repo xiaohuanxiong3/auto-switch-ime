@@ -17,7 +17,13 @@ class CustomCopyPastePreProcessor : CopyPastePreProcessor {
                     val endElement = p0.findElementAt(if (p2[0]-1 > p1[0]) p2[0]-1 else p1[0])
                     if (startElement.elementType.toString().contains("COMMENT")
                         && endElement.elementType.toString().contains("COMMENT")) {
-                        return p3.replace("/"," ").replace("*"," ")
+                        return p3.replace(Regex("\\{@code (.*?)}")) { result ->
+                                  // 去除 {@code }
+                                  result.groupValues[1]
+                               }.replace("*"," ")
+                                .replace(Regex("^/{1,2} | /$")) {result ->
+                                    ""
+                                }.replace(Regex(" {2,}")) {result ->  ""}
                     }
                 }
             }
@@ -32,3 +38,4 @@ class CustomCopyPastePreProcessor : CopyPastePreProcessor {
         return p3
     }
 }
+
