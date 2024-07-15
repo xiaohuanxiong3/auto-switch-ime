@@ -2,11 +2,9 @@ package com.sqy.plugins.auto_switch_ime.areaDecide
 
 import com.intellij.lang.Language
 import com.intellij.lang.java.JavaLanguage
-import com.intellij.psi.*
-import com.intellij.psi.impl.source.Constants
+import com.intellij.psi.PsiComment
 import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.intellij.psi.javadoc.PsiDocTag
-import com.sqy.plugins.auto_switch_ime.areaDecide.AreaDecider
 
 object JavaAreaDecider : AreaDecider {
 
@@ -48,20 +46,21 @@ object JavaAreaDecider : AreaDecider {
     }
 
     override fun isCodeArea(psiElement: LeafPsiElement, isLineEnd: Boolean): Boolean {
-        if (psiElement is PsiIdentifier
-            || psiElement.treeParent is PsiExpression
-            || psiElement.treeParent is PsiExpressionList
-            || psiElement.treeParent is PsiStatement
-            || (!isLineEnd && psiElement is PsiWhiteSpace)
-            || isLineEnd && psiElement.treePrev != null
-            && (psiElement.treePrev is PsiExpression
-                    || psiElement.treePrev is PsiStatement
-                    || psiElement.treePrev is Constants
-                    || psiElement.treePrev is PsiKeyword
-                    || psiElement.treePrev is PsiErrorElement)) {
-            return true
-        }
-        return false
+//        if (psiElement is PsiIdentifier
+//            || psiElement.treeParent is PsiExpression
+//            || psiElement.treeParent is PsiExpressionList
+//            || psiElement.treeParent is PsiStatement
+//            || (!isLineEnd && psiElement is PsiWhiteSpace)
+//            || isLineEnd && psiElement.treePrev != null
+//            && (psiElement.treePrev is PsiExpression
+//                    || psiElement.treePrev is PsiStatement
+//                    || psiElement.treePrev is Constants
+//                    || psiElement.treePrev is PsiKeyword
+//                    || psiElement.treePrev is PsiErrorElement)) {
+//            return true
+//        }
+//        return false
+        return true
     }
 
     override fun language(): Language {

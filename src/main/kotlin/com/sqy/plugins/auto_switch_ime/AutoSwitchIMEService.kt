@@ -12,7 +12,6 @@ import com.intellij.psi.PsiErrorElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.impl.source.tree.LeafPsiElement
-import com.sqy.plugins.auto_switch_ime.areaDecide.AreaDeciderDelegate
 import com.sqy.plugins.support.IMESwitchSupport
 import org.jetbrains.kotlin.idea.KotlinLanguage
 import java.util.concurrent.ConcurrentHashMap
@@ -82,11 +81,7 @@ object AutoSwitchIMEService {
      */
     private fun handleMouseClick(language: Language, psiElement: LeafPsiElement, isLineEnd : Boolean) {
         psiElement.let {
-            if (AreaDeciderDelegate.isCommentArea(language, it, isLineEnd)) {
-                IMESwitchSupport.switchToZh()
-            } else if (AreaDeciderDelegate.isCodeArea(language, it, isLineEnd)){
-                IMESwitchSupport.switchToEn()
-            }
+            IMESwitchDelegate.switch(language, it, isLineEnd)
         }
     }
 
@@ -96,11 +91,7 @@ object AutoSwitchIMEService {
     private fun handleOneCaretMove(language: Language, psiElement: LeafPsiElement, isLineEnd : Boolean) {
         psiElement.let {
             if (System.currentTimeMillis() - lastMoveTime > moveAllowInterval) {
-                if (AreaDeciderDelegate.isCommentArea(language, it, isLineEnd)) {
-                    IMESwitchSupport.switchToZh()
-                } else if (AreaDeciderDelegate.isCodeArea(language, it, isLineEnd)){
-                    IMESwitchSupport.switchToEn()
-                }
+                IMESwitchDelegate.switch(language, it, isLineEnd)
                 lastMoveTime = System.currentTimeMillis()
             }
         }
@@ -113,9 +104,7 @@ object AutoSwitchIMEService {
         if (caretPositionChange == 1) {
             IMESwitchSupport.switchToEn()
         } else if(caretPositionChange > 1){
-            psiElement.let {
-                AreaDeciderDelegate.handleEnterWhenMultipleCaretPositionChange(language, psiElement, isLineEnd)
-            }
+            IMESwitchDelegate.handleEnterWhenMultipleCaretPositionChange(language, psiElement, isLineEnd)
         }
     }
 
