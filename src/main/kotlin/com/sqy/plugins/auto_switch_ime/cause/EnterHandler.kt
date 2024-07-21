@@ -1,4 +1,4 @@
-package com.sqy.plugins.auto_switch_ime
+package com.sqy.plugins.auto_switch_ime.cause
 
 import com.intellij.codeInsight.editorActions.enter.EnterHandlerDelegate
 import com.intellij.codeInsight.editorActions.enter.EnterHandlerDelegateAdapter
@@ -7,8 +7,9 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.actionSystem.EditorActionHandler
 import com.intellij.openapi.util.Ref
 import com.intellij.psi.PsiFile
+import com.sqy.plugins.auto_switch_ime.service.AutoSwitchIMEService
 
-class CustomEnterHandlerDelegate : EnterHandlerDelegateAdapter() {
+class EnterHandler : EnterHandlerDelegateAdapter() {
 
     override fun preprocessEnter(file: PsiFile, editor: Editor, caretOffset: Ref<Int>, caretAdvance: Ref<Int>, dataContext: DataContext, originalHandler: EditorActionHandler?): EnterHandlerDelegate.Result {
         AutoSwitchIMEService.prepare(editor)
@@ -16,7 +17,7 @@ class CustomEnterHandlerDelegate : EnterHandlerDelegateAdapter() {
     }
 
     override fun postProcessEnter(file: PsiFile, editor: Editor, dataContext: DataContext): EnterHandlerDelegate.Result {
-        AutoSwitchIMEService.handle(editor,CaretPositionChangeCause.ENTER)
+        AutoSwitchIMEService.handle(editor, CaretPositionChangeCause.ENTER)
         return EnterHandlerDelegate.Result.Continue
     }
 }

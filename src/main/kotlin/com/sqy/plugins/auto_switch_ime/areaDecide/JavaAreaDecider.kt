@@ -3,12 +3,23 @@ package com.sqy.plugins.auto_switch_ime.areaDecide
 import com.intellij.lang.Language
 import com.intellij.lang.java.JavaLanguage
 import com.intellij.psi.PsiComment
+import com.intellij.psi.PsiElement
 import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.intellij.psi.javadoc.PsiDocTag
 
 object JavaAreaDecider : AreaDecider {
 
-    override fun isCommentArea(psiElement: LeafPsiElement, isLineEnd: Boolean): Boolean {
+    override fun isCommentArea(psiElement: PsiElement, isLineEnd: Boolean): Boolean {
+        psiElement.let {
+            it as? LeafPsiElement
+        }?.let {
+            return isCommentArea(it,isLineEnd)
+        }
+        // 此处理论上不会到达
+        return false
+    }
+
+    fun isCommentArea(psiElement: LeafPsiElement, isLineEnd: Boolean): Boolean {
         // 单行注释区
         if (psiElement is PsiComment) {
             return true
@@ -45,7 +56,17 @@ object JavaAreaDecider : AreaDecider {
         return false
     }
 
-    override fun isCodeArea(psiElement: LeafPsiElement, isLineEnd: Boolean): Boolean {
+    override fun isCodeArea(psiElement: PsiElement, isLineEnd: Boolean): Boolean {
+        psiElement.let {
+            it as? LeafPsiElement
+        }?.let {
+            return isCodeArea(it,isLineEnd)
+        }
+        // 此处应该永远不会到达
+        throw Error("插件内部错误!")
+    }
+
+    fun isCodeArea(psiElement: LeafPsiElement, isLineEnd: Boolean): Boolean {
 //        if (psiElement is PsiIdentifier
 //            || psiElement.treeParent is PsiExpression
 //            || psiElement.treeParent is PsiExpressionList

@@ -1,47 +1,58 @@
 <!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
     <!-- Unique identifier of the plugin. It should be FQN. It cannot be changed between the plugin versions. -->
-    <id>com.sqy.selfUsePlugin</id>
+    <id>com.friday.autoSwitchIME</id>
 
     <!-- Public plugin name should be written in Title Case.
          Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-name -->
-    <name>自用插件集合</name>
+    <name>输入法自动切换插件</name>
 
     <!-- A displayed Vendor name or Organization ID displayed on the Plugins Page. -->
-    <vendor email="1741258352@qq.com" url="https://www.JiaLiDun_Company.com">JiaLiDun Company</vendor>
+    <vendor email="jiaLiDun@qq.com" url="https://www.JiaLiDun_Company.com">JiaLiDun Company</vendor>
 
     <!-- Description of the plugin displayed on the Plugin Page and IDE Plugin Manager.
          Simple HTML elements (text formatting, paragraphs, and lists) can be added inside of <![CDATA[ ]]> tag.
          Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-description -->
     <description><![CDATA[
-    自用的插件集合.<br>
-    <em>emmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm</em>
+    输入法自动切换插件.<br>
+    输入法自动切换插件.<br>
+    输入法自动切换插件.<br>
+    输入法自动切换插件.<br>
   ]]></description>
 
     <!-- Product and plugin compatibility requirements.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
     <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.java</depends>
+    <depends>org.jetbrains.kotlin</depends>
 
     <!-- Extension points defined by the plugin.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
     <extensions defaultExtensionNs="com.intellij">
-        <!-- 翻译插件-->
+        <!-- 翻译插件 -->
         <projectService serviceImplementation="com.sqy.plugins.translation.service.TranslationUIManager"/>
         <applicationService serviceImplementation="com.sqy.plugins.translation.service.TranslationUIManager$AppService" />
         <applicationService serviceImplementation="com.sqy.plugins.translation.service.TranslationService" />
-        <!-- 翻译插件-->
-
-        <!-- 自动切换输入法-->
-        <applicationService serviceImplementation="com.sqy.plugins.auto_switch_ime.EditorMap$EditorCaretListenerMap" />
-        <applicationService serviceImplementation="com.sqy.plugins.auto_switch_ime.EditorMap$EditorPsiFileMap" />
-        <!-- 自动切换输入法-->
-
         <applicationConfigurable parentId="tools"
                                  instance="com.sqy.plugins.translation.setting.TranslationConfigurable"
                                  id="com.sqy.plugins.translation.setting.TranslationConfigurable"
                                  displayName="Translate Settings" />
         <applicationService serviceImplementation="com.sqy.plugins.translation.setting.TranslationSettings" />
+        <!-- 翻译插件 -->
 
+        <!-- 自动切换输入法-->
+        <editorFactoryListener implementation="com.sqy.plugins.auto_switch_ime.CustomEditorFactoryListener"/>
+        <editorActionHandler action="EditorUp" implementationClass="com.sqy.plugins.auto_switch_ime.cause.ArrowKeysPressedHandler" />
+        <editorActionHandler action="EditorDown" implementationClass="com.sqy.plugins.auto_switch_ime.cause.ArrowKeysPressedHandler" />
+        <editorActionHandler action="EditorLeft" implementationClass="com.sqy.plugins.auto_switch_ime.cause.ArrowKeysPressedHandler" />
+        <editorActionHandler action="EditorRight" implementationClass="com.sqy.plugins.auto_switch_ime.cause.ArrowKeysPressedHandler" />
+        <enterHandlerDelegate implementation="com.sqy.plugins.auto_switch_ime.cause.EnterHandler" />
+        <typedHandler implementation="com.sqy.plugins.auto_switch_ime.cause.CharTypedHandler" />
+        <!-- 自动切换输入法-->
+
+        <!-- 自定义复制粘贴处理-->
+        <copyPastePreProcessor implementation="com.sqy.plugins.copy.CustomCopyPastePreProcessor" />
+        <!-- 自定义复制粘贴处理-->
     </extensions>
 
     <actions>
@@ -52,21 +63,4 @@
         </action>
     </actions>
 
-    <extensions defaultExtensionNs="com.intellij">
-        <!-- 自动切换输入法-->
-        <editorFactoryListener implementation="com.sqy.plugins.auto_switch_ime.CustomEditorFactoryListener"/>
-        <editorActionHandler action="EditorUp" implementationClass="com.sqy.plugins.auto_switch_ime.CustomMoveCaretHandler" />
-        <editorActionHandler action="EditorDown" implementationClass="com.sqy.plugins.auto_switch_ime.CustomMoveCaretHandler" />
-        <editorActionHandler action="EditorLeft" implementationClass="com.sqy.plugins.auto_switch_ime.CustomMoveCaretHandler" />
-        <editorActionHandler action="EditorRight" implementationClass="com.sqy.plugins.auto_switch_ime.CustomMoveCaretHandler" />
-        <enterHandlerDelegate implementation="com.sqy.plugins.auto_switch_ime.CustomEnterHandlerDelegate" />
-        <typedHandler implementation="com.sqy.plugins.auto_switch_ime.CustomTypedDelegate" />
-        <!-- 自动切换输入法-->
-        <!-- 自定义复制粘贴处理-->
-        <copyPastePreProcessor implementation="com.sqy.plugins.copy.CustomCopyPastePreProcessor" />
-        <!-- 自定义复制粘贴处理-->
-    </extensions>
-
-    <depends>com.intellij.java</depends>
-    <depends>org.jetbrains.kotlin</depends>
 </idea-plugin>

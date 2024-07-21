@@ -1,4 +1,4 @@
-package com.sqy.plugins.auto_switch_ime
+package com.sqy.plugins.auto_switch_ime.service
 
 import com.intellij.injected.editor.EditorWindow
 import com.intellij.lang.Language
@@ -8,10 +8,11 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.fileTypes.PlainTextLanguage
 import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiErrorElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiWhiteSpace
-import com.intellij.psi.impl.source.tree.LeafPsiElement
+import com.sqy.plugins.auto_switch_ime.EditorMap
+import com.sqy.plugins.auto_switch_ime.SwitchIMECaretListener
+import com.sqy.plugins.auto_switch_ime.cause.CaretPositionChangeCause
 import com.sqy.plugins.support.IMESwitchSupport
 import org.jetbrains.kotlin.idea.KotlinLanguage
 import java.util.concurrent.ConcurrentHashMap
@@ -20,9 +21,6 @@ object AutoSwitchIMEService {
 
     private val caretListenerMap : ConcurrentHashMap<Editor, SwitchIMECaretListener> = EditorMap.caretListenerMap
     private val psiFileMap : ConcurrentHashMap<Editor, PsiFile> = EditorMap.psiFileMap
-    private var lastMoveTime : Long = 0
-    private val moveAllowInterval : Long = 300
-
     private val logger : Logger = Logger.getInstance(AutoSwitchIMEService::class.java)
 
     fun prepare(editor: Editor) {
@@ -61,61 +59,8 @@ object AutoSwitchIMEService {
                 handleSwitchWhenNullPsiElement(editor,language)
                 return
             }
-            psiElement.let {
-                it as? LeafPsiElement
-            }?.let {
-                val isLineEnd = isLineEnd(editor.caretModel.offset,psiElement,cause)
-                when(cause) {
-                    CaretPositionChangeCause.MOUSE_CLIKED -> handleMouseClick(language,it,isLineEnd)
-                    CaretPositionChangeCause.ONE_CARET_MOVE -> handleOneCaretMove(language,it,isLineEnd)
-                    CaretPositionChangeCause.ENTER -> handleEnter(language,caretListener.caretPositionChange,it,isLineEnd)
-                    CaretPositionChangeCause.TYPED -> handleType(language,it,isLineEnd)
-                    else -> {}
-                }
-            }
-        }
-    }
-
-    /**
-     * 处理鼠标点击引起的光标移动
-     */
-    private fun handleMouseClick(language: Language, psiElement: LeafPsiElement, isLineEnd : Boolean) {
-        psiElement.let {
-            IMESwitchDelegate.switch(language, it, isLineEnd)
-        }
-    }
-
-    /**
-     * 处理按下方向键引起的光标移动
-     */
-    private fun handleOneCaretMove(language: Language, psiElement: LeafPsiElement, isLineEnd : Boolean) {
-        psiElement.let {
-            if (System.currentTimeMillis() - lastMoveTime > moveAllowInterval) {
-                IMESwitchDelegate.switch(language, it, isLineEnd)
-                lastMoveTime = System.currentTimeMillis()
-            }
-        }
-    }
-
-    /**
-     * 处理 按下回车键引起的光标移动
-     */
-    private fun handleEnter(language: Language, caretPositionChange : Int, psiElement: LeafPsiElement, isLineEnd : Boolean) {
-        if (caretPositionChange == 1) {
-            IMESwitchSupport.switchToEn()
-        } else if(caretPositionChange > 1){
-            IMESwitchDelegate.handleEnterWhenMultipleCaretPositionChange(language, psiElement, isLineEnd)
-        }
-    }
-
-    /**
-     * 处理 输入字符引起的光标移动，主要是检测以//开头的注释
-     */
-    private fun handleType(language: Language, psiElement: LeafPsiElement, isLineEnd : Boolean) {
-        psiElement.let {
-            if (isLineEnd && psiElement.treePrev is PsiErrorElement) {
-                IMESwitchSupport.switchToZh()
-            }
+            val isLineEnd = isLineEnd(editor.caretModel.offset,psiElement,cause)
+            CaretPositionChangeCause.getIMESwitchHandler(cause)?.handle(language, caretListener.caretPositionChange, psiElement, isLineEnd)
         }
     }
 
@@ -153,6 +98,9 @@ object AutoSwitchIMEService {
     private fun isLineEnd(offset : Int, psiElement: PsiElement?, cause: CaretPositionChangeCause) : Boolean {
         return psiElement is PsiWhiteSpace
                 && psiElement.text.contains("\n")
-                && psiElement.textRange.endOffset - psiElement.text.length + (( if (cause == CaretPositionChangeCause.TYPED)  1 else 0 )) <= offset
+                // 当包含多个'\n'，只有psiElement开始处直到第一个换行符（包含第一个换行符）才被认为是行尾
+                // 当进行字符输入走到这时，offset已经更新，而psiElement似乎还未更新
+                && offset <= psiElement.textRange.startOffset + psiElement.text.indexOf('\n') + (( if (cause == CaretPositionChangeCause.CHAR_TYPED)  1 else 0 ))
+                && psiElement.textRange.endOffset - psiElement.text.length + (( if (cause == CaretPositionChangeCause.CHAR_TYPED)  1 else 0 )) <= offset
     }
 }

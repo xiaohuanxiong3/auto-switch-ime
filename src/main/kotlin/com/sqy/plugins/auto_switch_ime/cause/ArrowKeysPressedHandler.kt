@@ -1,11 +1,12 @@
-package com.sqy.plugins.auto_switch_ime
+package com.sqy.plugins.auto_switch_ime.cause
 
 import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.editor.Caret
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.actionSystem.EditorActionHandler
+import com.sqy.plugins.auto_switch_ime.service.AutoSwitchIMEService
 
-class CustomMoveCaretHandler : EditorActionHandler {
+class ArrowKeysPressedHandler : EditorActionHandler {
 
     private val myOriginalHandler : EditorActionHandler?
 
@@ -16,7 +17,7 @@ class CustomMoveCaretHandler : EditorActionHandler {
     override fun doExecute(editor: Editor, caret: Caret?, dataContext: DataContext?) {
         AutoSwitchIMEService.prepare(editor)
         myOriginalHandler?.execute(editor, caret,dataContext)
-        AutoSwitchIMEService.handle(editor,CaretPositionChangeCause.ONE_CARET_MOVE)
+        AutoSwitchIMEService.handle(editor, CaretPositionChangeCause.ARROW_KEYS_PRESSED)
     }
 
     override fun isEnabledForCaret(editor: Editor, caret: Caret, dataContext: DataContext?): Boolean {

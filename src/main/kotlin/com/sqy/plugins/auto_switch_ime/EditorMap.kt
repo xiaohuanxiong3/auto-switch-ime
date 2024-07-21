@@ -1,19 +1,18 @@
 package com.sqy.plugins.auto_switch_ime
 
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.components.Service
 import com.intellij.openapi.editor.Editor
 import com.intellij.psi.PsiFile
 import java.util.concurrent.ConcurrentHashMap
 
 class EditorMap : ConcurrentHashMap<Editor,PsiFile>() {
 
-    class EditorPsiFileMap : ConcurrentHashMap<Editor,PsiFile>(){
+    @Service
+    class EditorPsiFileMap : ConcurrentHashMap<Editor,PsiFile>()
 
-    }
-
-    class EditorCaretListenerMap() : ConcurrentHashMap<Editor, SwitchIMECaretListener>() {
-
-    }
+    @Service
+    class EditorCaretListenerMap() : ConcurrentHashMap<Editor, SwitchIMECaretListener>()
 
     companion object{
         /**

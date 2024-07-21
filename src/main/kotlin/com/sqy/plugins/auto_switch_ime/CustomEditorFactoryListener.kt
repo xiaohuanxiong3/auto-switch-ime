@@ -1,13 +1,12 @@
 package com.sqy.plugins.auto_switch_ime
 
 import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.editor.event.CaretListener
 import com.intellij.openapi.editor.event.EditorFactoryEvent
 import com.intellij.openapi.editor.event.EditorFactoryListener
-import com.intellij.openapi.editor.ex.FocusChangeListener
+import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiFile
-import java.awt.event.FocusEvent
+import com.sqy.plugins.auto_switch_ime.cause.MouseClickedHandler
 import java.util.concurrent.ConcurrentHashMap
 
 class CustomEditorFactoryListener : EditorFactoryListener {
@@ -16,19 +15,23 @@ class CustomEditorFactoryListener : EditorFactoryListener {
     private val psiFileMap : ConcurrentHashMap<Editor,PsiFile> = EditorMap.psiFileMap
 
     override fun editorCreated(event: EditorFactoryEvent) {
-        val caretListener = SwitchIMECaretListener()
-        // 缓存 CaretListener
-        caretListenerMap[event.editor] = caretListener
-        // 缓存 PsiFile
         event.editor.project?.let {
             PsiDocumentManager.getInstance(it).getPsiFile(event.editor.document)
-        }?.let {
-            psiFileMap[event.editor] = it
+        }?.let { psiFile ->
+            val caretListener = SwitchIMECaretListener()
+            // 缓存 CaretListener
+            caretListenerMap[event.editor] = caretListener
+            // 缓存 PsiFile
+            psiFileMap[event.editor] = psiFile
+            // 添加自定义的 CaretListener
+            event.editor.caretModel.addCaretListener(caretListener)
+            // 添加自定义的 EditorMouseListener（EditorImpl 调用 release() 方法时会清空 myMouseListeners,故此处只需添加，不用管删除）
+            event.editor.addEditorMouseListener(MouseClickedHandler())
+            // 添加自定义的 FocusChangeListener（删除如上）
+            event.editor.let {
+                it as? EditorImpl
+            }?.addFocusListener(FocusGainedListener())
         }
-        // 添加自定义的 CaretListener
-        event.editor.caretModel.addCaretListener(caretListener)
-        // 添加自定义的 EditorMouseListener
-        event.editor.addEditorMouseListener(CustomEditorMouseListener())
     }
 
     override fun editorReleased(event: EditorFactoryEvent) {
@@ -40,29 +43,6 @@ class CustomEditorFactoryListener : EditorFactoryListener {
         // 删除自定义的 CaretListener
         caretListener?.let {
             event.editor.caretModel.removeCaretListener(it)
-        }
-    }
-
-    class CustomFocusChangeListener(private val map: ConcurrentHashMap<Editor,CaretListener>)
-        : FocusChangeListener {
-
-        // 获取全局的切换输入法定时任务服务
-//        private val switchIMEService : SwitchIMEService =
-//                ApplicationManager.getApplication().getService(SwitchIMEService::class.java)
-
-        override fun focusGained(editor: Editor, event: FocusEvent) {
-            // println("focusGained:" + editor.hashCode() + "----cause:" + event.cause)
-            val caretListener = map[editor]
-//            caretListener?.let {
-//                switchIMEService.setCaretListener(it)
-//            }
-            super.focusGained(editor, event)
-        }
-
-        override fun focusLost(editor: Editor, event: FocusEvent) {
-            // println("focusLost:" + editor.hashCode() + "----cause:" + event.cause)
-            // switchIMEService.resetCaretListener()
-            super.focusLost(editor, event)
         }
     }
 

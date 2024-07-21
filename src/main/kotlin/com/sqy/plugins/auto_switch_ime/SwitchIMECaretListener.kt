@@ -5,6 +5,7 @@ import com.intellij.openapi.editor.event.CaretListener
 
 
 class SwitchIMECaretListener : CaretListener {
+
     var caretPositionChange : Int = 0
 
     override fun caretPositionChanged(event: CaretEvent) {

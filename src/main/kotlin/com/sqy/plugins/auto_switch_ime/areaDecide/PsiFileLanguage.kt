@@ -6,18 +6,18 @@ import org.jetbrains.kotlin.idea.KotlinLanguage
 
 enum class PsiFileLanguage(
     val language: Language,
-    val areaDecider: AreaDecider
 ) {
-    JAVA(JavaLanguage.INSTANCE,JavaAreaDecider),
-    KOTLIN(KotlinLanguage.INSTANCE,KotlinAreaDecider);
+
+    JAVA(JavaLanguage.INSTANCE),
+    KOTLIN(KotlinLanguage.INSTANCE);
 
     companion object {
         fun getAreaDecider(language: Language) : AreaDecider? {
-            return values().filter {
-                it.language == language
-            }.takeIf {
-                it.isNotEmpty()
-            }?.get(0)?.areaDecider
+            return when(language) {
+                JavaLanguage.INSTANCE -> JavaAreaDecider
+                KotlinLanguage.INSTANCE -> KotlinAreaDecider
+                else -> null
+            }
         }
     }
 }
