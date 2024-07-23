@@ -5,7 +5,7 @@ import com.intellij.lang.java.JavaLanguage
 import com.intellij.psi.PsiElement
 import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.sqy.plugins.auto_switch_ime.areaDecide.AreaDeciderDelegate
-import com.sqy.plugins.support.IMESwitchSupport
+import com.sqy.plugins.auto_switch_ime.support.IMESwitchSupport
 import org.jetbrains.kotlin.idea.KotlinLanguage
 
 /**

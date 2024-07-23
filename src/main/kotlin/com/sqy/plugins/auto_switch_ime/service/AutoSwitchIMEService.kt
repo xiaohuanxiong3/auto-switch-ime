@@ -13,7 +13,7 @@ import com.intellij.psi.PsiWhiteSpace
 import com.sqy.plugins.auto_switch_ime.EditorMap
 import com.sqy.plugins.auto_switch_ime.SwitchIMECaretListener
 import com.sqy.plugins.auto_switch_ime.cause.CaretPositionChangeCause
-import com.sqy.plugins.support.IMESwitchSupport
+import com.sqy.plugins.auto_switch_ime.support.IMESwitchSupport
 import org.jetbrains.kotlin.idea.KotlinLanguage
 import java.util.concurrent.ConcurrentHashMap
 

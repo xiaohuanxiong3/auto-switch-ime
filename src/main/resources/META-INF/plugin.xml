@@ -29,17 +29,6 @@
     <!-- Extension points defined by the plugin.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
     <extensions defaultExtensionNs="com.intellij">
-        <!-- 翻译插件 -->
-        <projectService serviceImplementation="com.sqy.plugins.translation.service.TranslationUIManager"/>
-        <applicationService serviceImplementation="com.sqy.plugins.translation.service.TranslationUIManager$AppService" />
-        <applicationService serviceImplementation="com.sqy.plugins.translation.service.TranslationService" />
-        <applicationConfigurable parentId="tools"
-                                 instance="com.sqy.plugins.translation.setting.TranslationConfigurable"
-                                 id="com.sqy.plugins.translation.setting.TranslationConfigurable"
-                                 displayName="Translate Settings" />
-        <applicationService serviceImplementation="com.sqy.plugins.translation.setting.TranslationSettings" />
-        <!-- 翻译插件 -->
-
         <!-- 自动切换输入法-->
         <editorFactoryListener implementation="com.sqy.plugins.auto_switch_ime.CustomEditorFactoryListener"/>
         <editorActionHandler action="EditorUp" implementationClass="com.sqy.plugins.auto_switch_ime.cause.ArrowKeysPressedHandler" />
@@ -48,6 +37,8 @@
         <editorActionHandler action="EditorRight" implementationClass="com.sqy.plugins.auto_switch_ime.cause.ArrowKeysPressedHandler" />
         <enterHandlerDelegate implementation="com.sqy.plugins.auto_switch_ime.cause.EnterHandler" />
         <typedHandler implementation="com.sqy.plugins.auto_switch_ime.cause.CharTypedHandler" />
+        <applicationConfigurable instance="com.sqy.plugins.auto_switch_ime.setting.SwitchIMEConfigurable"
+                                 displayName="输入法自动切换插件配置"/>
         <!-- 自动切换输入法-->
 
         <!-- 自定义复制粘贴处理-->
@@ -56,11 +47,7 @@
     </extensions>
 
     <actions>
-        <action id="Self_Translate" class="com.sqy.plugins.translation.action.TranslationActionKt" text="translate"
-                description="翻译选中的文本">
-            <add-to-group group-id="EditorPopupMenu" anchor="first"/>
-            <keyboard-shortcut keymap="$default" first-keystroke="ctrl T"/>
-        </action>
+
     </actions>
 
 </idea-plugin>

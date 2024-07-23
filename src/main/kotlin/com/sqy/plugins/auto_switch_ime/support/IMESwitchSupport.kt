@@ -1,4 +1,4 @@
-package com.sqy.plugins.support
+package com.sqy.plugins.auto_switch_ime.support
 
 import com.sun.jna.Library
 import com.sun.jna.Native
@@ -21,11 +21,11 @@ object IMESwitchSupport {
 //        System.setProperty("jna.debug_load", "true")
 //    }
 
-    val LIBRARYWin = if (Platform.isWindows()) Native.load("libswitchIMEWin.dll",IMEWin::class.java)
+    val LIBRARYWin = if (Platform.isWindows()) Native.load("libswitchIMEWin.dll", IMEWin::class.java)
     else null
 
     val LIBRARYMac =
-        if (Platform.isMac()) Native.load("libswitchIMEMac.dylib",IMEMac::class.java)
+        if (Platform.isMac()) Native.load("libswitchIMEMac.dylib", IMEMac::class.java)
         else null
 
     val toEnId = "com.apple.keylayout.ABC"
