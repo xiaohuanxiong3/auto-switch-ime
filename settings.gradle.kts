@@ -1,1 +1,1 @@
-rootProject.name = "self-use-plugin"
+rootProject.name = "auto-switch-ime"
