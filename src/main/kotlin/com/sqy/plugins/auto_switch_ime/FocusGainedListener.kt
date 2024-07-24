@@ -4,7 +4,6 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.ex.FocusChangeListener
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiFile
-import com.sqy.plugins.auto_switch_ime.cause.MouseClickedHandler
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -17,7 +16,7 @@ class FocusGainedListener : FocusChangeListener {
     private val psiFileMap : ConcurrentHashMap<Editor, PsiFile> = EditorMap.psiFileMap
 
     override fun focusGained(editor: Editor) {
-        if (!caretListenerMap.containsKey(editor)) {
+        if (!caretListenerMap.containsKey(editor) || !psiFileMap.containsKey(editor)) {
             editor.project?.let { project ->
                 PsiDocumentManager.getInstance(project).getPsiFile(editor.document)
             }?.let { psiFile -> {
@@ -26,10 +25,6 @@ class FocusGainedListener : FocusChangeListener {
                 caretListenerMap[editor] = caretListener
                 // 缓存 PsiFile
                 psiFileMap[editor] = psiFile
-                // 添加自定义的 CaretListener
-                editor.caretModel.addCaretListener(caretListener)
-                // 添加自定义的 EditorMouseListener（EditorImpl 调用 release() 方法时会清空 myMouseListeners,故此处只需添加，不用管删除）
-                editor.addEditorMouseListener(MouseClickedHandler())
             }}
         }
     }

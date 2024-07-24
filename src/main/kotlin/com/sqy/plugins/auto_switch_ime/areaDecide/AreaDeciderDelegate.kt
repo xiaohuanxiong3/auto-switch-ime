@@ -2,6 +2,7 @@ package com.sqy.plugins.auto_switch_ime.areaDecide
 
 import com.intellij.lang.Language
 import com.intellij.psi.PsiElement
+import com.sqy.plugins.auto_switch_ime.PsiFileLanguage
 
 object AreaDeciderDelegate {
 

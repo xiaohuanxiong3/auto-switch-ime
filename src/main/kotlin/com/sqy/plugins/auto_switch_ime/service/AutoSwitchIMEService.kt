@@ -11,8 +11,10 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiWhiteSpace
 import com.sqy.plugins.auto_switch_ime.EditorMap
+import com.sqy.plugins.auto_switch_ime.PsiFileLanguage
 import com.sqy.plugins.auto_switch_ime.SwitchIMECaretListener
 import com.sqy.plugins.auto_switch_ime.cause.CaretPositionChangeCause
+import com.sqy.plugins.auto_switch_ime.handler.SingleLanguageSwitchIMEDelegate
 import com.sqy.plugins.auto_switch_ime.support.IMESwitchSupport
 import org.jetbrains.kotlin.idea.KotlinLanguage
 import java.util.concurrent.ConcurrentHashMap
@@ -46,12 +48,14 @@ object AutoSwitchIMEService {
     }
 
     private fun doHandle(editor: Editor, cause: CaretPositionChangeCause) {
-        val caretListener = caretListenerMap[editor]!!
-        if (caretListener.caretPositionChange <= 0) {
-            return
+        var caretPositionChange = 0
+        caretListenerMap.getOrDefault(editor,null)?.let {
+            caretPositionChange = it.caretPositionChange
+            if (caretPositionChange <= 0) {
+                return
+            }
         }
-        val psiFile = psiFileMap.getOrDefault(editor,null)
-        psiFile?.let { file ->
+        psiFileMap.getOrDefault(editor,null)?.let { file ->
             val language = file.language
             val psiElement = file.findElementAt(editor.caretModel.offset)
             // 如果 psiElement为null
@@ -60,7 +64,10 @@ object AutoSwitchIMEService {
                 return
             }
             val isLineEnd = isLineEnd(editor.caretModel.offset,psiElement,cause)
-            CaretPositionChangeCause.getIMESwitchHandler(cause)?.handle(language, caretListener.caretPositionChange, psiElement, isLineEnd)
+            // TODO 感觉这个判断放到 CustomEditorFactoryListener 的 editorCreated 中也是可行的
+            if (PsiFileLanguage.isLanguageAutoSwitchEnabled(language)) {
+                SingleLanguageSwitchIMEDelegate.handle(language, cause, caretPositionChange, psiElement,isLineEnd)
+            }
         }
     }
 

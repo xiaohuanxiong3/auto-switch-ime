@@ -47,7 +47,11 @@
     </extensions>
 
     <actions>
-
+        <action id="com.sqy.plugins.auto_switch_ime.action.SwitchAutoSwitchEnableAction"
+                class="com.sqy.plugins.auto_switch_ime.action.SwitchAutoSwitchEnableAction"
+                text="switch_single_language_auto_switch_enable" description="控制单语言输入法自动切换功能打开和关闭">
+            <keyboard-shortcut keymap="$default" first-keystroke="shift ctrl S"/>
+        </action>
     </actions>
 
 </idea-plugin>
