@@ -39,6 +39,9 @@
         <typedHandler implementation="com.sqy.plugins.auto_switch_ime.cause.CharTypedHandler" />
         <applicationConfigurable instance="com.sqy.plugins.auto_switch_ime.setting.SwitchIMEConfigurable"
                                  displayName="输入法自动切换插件配置"/>
+        <notificationGroup displayType="BALLOON"
+                           id="auto-switch-ime-plugin"
+                           isLogByDefault="false"/>
         <!-- 自动切换输入法-->
 
         <!-- 自定义复制粘贴处理-->

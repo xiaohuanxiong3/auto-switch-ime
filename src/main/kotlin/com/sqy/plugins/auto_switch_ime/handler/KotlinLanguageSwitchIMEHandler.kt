@@ -7,19 +7,19 @@ import org.jetbrains.kotlin.idea.KotlinLanguage
 object KotlinLanguageSwitchIMEHandler : SingleLanguageSwitchIMEHandler {
 
     override fun handleMouseClicked(caretPositionChange: Int, psiElement: PsiElement, isLineEnd: Boolean) {
-        TODO("Not yet implemented")
+
     }
 
     override fun handleEnter(caretPositionChange: Int, psiElement: PsiElement, isLineEnd: Boolean) {
-        TODO("Not yet implemented")
+
     }
 
     override fun handleCharTyped(caretPositionChange: Int, psiElement: PsiElement, isLineEnd: Boolean) {
-        TODO("Not yet implemented")
+
     }
 
     override fun handleArrowKeysPressed(caretPositionChange: Int, psiElement: PsiElement, isLineEnd: Boolean) {
-        TODO("Not yet implemented")
+
     }
 
     override fun getLanguage(): Language {

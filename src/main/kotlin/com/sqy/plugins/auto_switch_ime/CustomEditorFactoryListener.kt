@@ -3,7 +3,6 @@ package com.sqy.plugins.auto_switch_ime
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.event.EditorFactoryEvent
 import com.intellij.openapi.editor.event.EditorFactoryListener
-import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiFile
 import com.sqy.plugins.auto_switch_ime.cause.MouseClickedHandler
@@ -28,9 +27,9 @@ class CustomEditorFactoryListener : EditorFactoryListener {
             // 添加自定义的 EditorMouseListener（EditorImpl 调用 release() 方法时会清空 myMouseListeners,故此处只需添加，不用管删除）
             event.editor.addEditorMouseListener(MouseClickedHandler())
             // 添加自定义的 FocusChangeListener（删除如上）
-            event.editor.let {
-                it as? EditorImpl
-            }?.addFocusListener(FocusGainedListener())
+//            event.editor.let {
+//                it as? EditorImpl
+//            }?.addFocusListener(FocusGainedListener())
         }
     }
 

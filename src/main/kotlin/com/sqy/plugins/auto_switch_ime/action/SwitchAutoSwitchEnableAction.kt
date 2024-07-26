@@ -6,32 +6,34 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.sqy.plugins.auto_switch_ime.setting.SwitchIMESettings
 import com.sqy.plugins.auto_switch_ime.util.EditorUtil
+import com.sqy.plugins.auto_switch_ime.util.NotificationUtil
 import org.jetbrains.kotlin.idea.KotlinLanguage
 
 class SwitchAutoSwitchEnableAction : AnAction() {
 
     override fun actionPerformed(event: AnActionEvent) {
         event.getData(CommonDataKeys.EDITOR)?.let { editor ->
-            when (EditorUtil.getLanguage(editor)) {
+            val language = EditorUtil.getLanguage(editor)
+            when (language) {
                 JavaLanguage.INSTANCE -> {
                     SwitchIMESettings.instance.isJavaEnabled = !SwitchIMESettings.instance.isJavaEnabled
                     if (SwitchIMESettings.instance.isJavaEnabled) {
-                        // 本地打印中文会有乱码，淦！
-                        println("开启Java语言输入法自动切换功能")
+                        NotificationUtil.info("Java-开启输入法自动切换")
                     } else {
-                        println("关闭Java语言输入法自动切换功能")
+                        NotificationUtil.info("Java-关闭输入法自动切换")
                     }
                 }
                 KotlinLanguage.INSTANCE -> {
                     SwitchIMESettings.instance.isKotlinEnabled = !SwitchIMESettings.instance.isKotlinEnabled
                     if (SwitchIMESettings.instance.isKotlinEnabled) {
-                        println("开启Kotlin语言输入法自动切换功能")
+                        NotificationUtil.info("Kotlin-开启输入法自动切换")
                     } else {
-                        println("关闭Kotlin语言输入法自动切换功能")
+                        NotificationUtil.info("Kotlin-关闭输入法自动切换")
                     }
                 }
                 else -> {
                     // do nothing
+                    NotificationUtil.warn("${language.toString()}-暂不支持输入法自动切换")
                 }
             }
         }
