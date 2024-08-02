@@ -25,8 +25,8 @@ import java.util.concurrent.ConcurrentHashMap
 @Deprecated("")
 class FocusGainedListener : FocusChangeListener {
 
-    private val caretListenerMap : ConcurrentHashMap<Editor, SwitchIMECaretListener> = EditorMap.caretListenerMap
-    private val psiFileMap : ConcurrentHashMap<Editor, PsiFile> = EditorMap.psiFileMap
+    private val caretListenerMap : ConcurrentHashMap<Editor, SwitchIMECaretListener> = Map.caretListenerMap
+    private val psiFileMap : ConcurrentHashMap<Editor, PsiFile> = Map.editorPsiFileMap
 
     override fun focusGained(editor: Editor) {
         if (!caretListenerMap.containsKey(editor) || !psiFileMap.containsKey(editor)) {

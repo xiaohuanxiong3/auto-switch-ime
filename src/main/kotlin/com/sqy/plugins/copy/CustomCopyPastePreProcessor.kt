@@ -5,29 +5,28 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.RawText
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
-import com.intellij.psi.util.elementType
 
 class CustomCopyPastePreProcessor : CopyPastePreProcessor {
 
     override fun preprocessOnCopy(p0: PsiFile?, p1: IntArray?, p2: IntArray?, p3: String?): String? {
-        p0?.let {
-            p3?.let {
-                if (p1 != null && p1.size == 1 && p2 != null && p2.size == 1) {
-                    val startElement = p0.findElementAt(p1[0])
-                    val endElement = p0.findElementAt(if (p2[0]-1 > p1[0]) p2[0]-1 else p1[0])
-                    if (startElement.elementType.toString().contains("COMMENT")
-                        && endElement.elementType.toString().contains("COMMENT")) {
-                        return p3.replace(Regex("\\{@code (.*?)}")) { result ->
-                                  // 去除 {@code }
-                                  result.groupValues[1]
-                               }.replace("*"," ")
-                                .replace(Regex("^/{1,2} | /$")) {result ->
-                                    ""
-                                }.replace(Regex(" {2,}")) {result ->  ""}
-                    }
-                }
-            }
-        }
+//        p0?.let {
+//            p3?.let {
+//                if (p1 != null && p1.size == 1 && p2 != null && p2.size == 1) {
+//                    val startElement = p0.findElementAt(p1[0])
+//                    val endElement = p0.findElementAt(if (p2[0]-1 > p1[0]) p2[0]-1 else p1[0])
+//                    if (startElement.elementType.toString().contains("COMMENT")
+//                        && endElement.elementType.toString().contains("COMMENT")) {
+//                        return p3.replace(Regex("\\{@code (.*?)}")) { result ->
+//                                  // 去除 {@code }
+//                                  result.groupValues[1]
+//                               }.replace("*"," ")
+//                                .replace(Regex("^/{1,2} | /$")) {result ->
+//                                    ""
+//                                }.replace(Regex(" {2,}")) {result ->  ""}
+//                    }
+//                }
+//            }
+//        }
         return p3
     }
 

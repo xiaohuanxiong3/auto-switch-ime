@@ -1,6 +1,8 @@
 package com.sqy.plugins.auto_switch_ime
 
 import com.intellij.openapi.editor.Editor
+import com.intellij.openapi.editor.event.DocumentEvent
+import com.intellij.openapi.editor.event.DocumentListener
 import com.intellij.openapi.editor.event.EditorFactoryEvent
 import com.intellij.openapi.editor.event.EditorFactoryListener
 import com.intellij.psi.PsiDocumentManager
@@ -10,9 +12,12 @@ import java.util.concurrent.ConcurrentHashMap
 
 class CustomEditorFactoryListener : EditorFactoryListener {
 
-    private val caretListenerMap : ConcurrentHashMap<Editor,SwitchIMECaretListener> = EditorMap.caretListenerMap
-    private val psiFileMap : ConcurrentHashMap<Editor,PsiFile> = EditorMap.psiFileMap
+    private val caretListenerMap : ConcurrentHashMap<Editor,SwitchIMECaretListener> = Map.caretListenerMap
+    private val editorPsiFileMap : ConcurrentHashMap<Editor,PsiFile> = Map.editorPsiFileMap
+    private val psiFileMap : ConcurrentHashMap<PsiFile, Editor> = Map.psiFileEditorMap
+    private val psiElementLocationMap : ConcurrentHashMap<Editor, PsiElementLocation> = Map.psiElementLocationMap
 
+    // editor 是 文本编辑器
     override fun editorCreated(event: EditorFactoryEvent) {
         event.editor.project?.let {
             PsiDocumentManager.getInstance(it).getPsiFile(event.editor.document)
@@ -20,12 +25,17 @@ class CustomEditorFactoryListener : EditorFactoryListener {
             val caretListener = SwitchIMECaretListener()
             // 缓存 CaretListener
             caretListenerMap[event.editor] = caretListener
-            // 缓存 PsiFile
-            psiFileMap[event.editor] = psiFile
+            // 缓存 Editor -> PsiFile 映射关系
+            editorPsiFileMap[event.editor] = psiFile
+            // 缓存 PsiFile -> Editor 映射关系
+            psiFileMap[psiFile] = event.editor
+            // 缓存 PsiElementLocation
+            psiElementLocationMap[event.editor] = PsiElementLocation()
             // 添加自定义的 CaretListener
             event.editor.caretModel.addCaretListener(caretListener)
             // 添加自定义的 EditorMouseListener（EditorImpl 调用 release() 方法时会清空 myMouseListeners,故此处只需添加，不用管删除）
             event.editor.addEditorMouseListener(MouseClickedHandler())
+//            event.editor.document.addDocumentListener(CustomDocumentListener())
             // 添加自定义的 FocusChangeListener（删除如上）
 //            event.editor.let {
 //                it as? EditorImpl
@@ -37,11 +47,21 @@ class CustomEditorFactoryListener : EditorFactoryListener {
         val caretListener = caretListenerMap[event.editor]
         // 删除 CaretListener 缓存
         caretListenerMap.remove(event.editor)
-        // 删除 PsiFile 缓存
-        psiFileMap.remove(event.editor)
+        // 删除 PsiFile -> Editor 缓存
+        psiFileMap.remove(editorPsiFileMap[event.editor])
+        // 删除 Editor -> PsiFile 缓存
+        editorPsiFileMap.remove(event.editor)
+        // 删除 PsiElementLocation 缓存
+        psiElementLocationMap.remove(event.editor)
         // 删除自定义的 CaretListener
-        caretListener?.let {
-            event.editor.caretModel.removeCaretListener(it)
+//        caretListener?.let {
+//            event.editor.caretModel.removeCaretListener(it)
+//        }
+    }
+
+    class CustomDocumentListener : DocumentListener {
+        override fun documentChanged(event: DocumentEvent) {
+            println(event)
         }
     }
 

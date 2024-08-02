@@ -10,7 +10,8 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiInvalidElementAccessException
 import com.intellij.psi.PsiWhiteSpace
-import com.sqy.plugins.auto_switch_ime.EditorMap
+import com.sqy.plugins.auto_switch_ime.Map
+import com.sqy.plugins.auto_switch_ime.PsiElementLocation
 import com.sqy.plugins.auto_switch_ime.PsiFileLanguage
 import com.sqy.plugins.auto_switch_ime.SwitchIMECaretListener
 import com.sqy.plugins.auto_switch_ime.cause.CaretPositionChangeCause
@@ -22,8 +23,10 @@ import java.util.concurrent.ConcurrentHashMap
 
 object AutoSwitchIMEService {
 
-    private val caretListenerMap : ConcurrentHashMap<Editor, SwitchIMECaretListener> = EditorMap.caretListenerMap
-    private val psiFileMap : ConcurrentHashMap<Editor, PsiFile> = EditorMap.psiFileMap
+    private val caretListenerMap : ConcurrentHashMap<Editor, SwitchIMECaretListener> = Map.caretListenerMap
+    private val editorPsiFileMap : ConcurrentHashMap<Editor, PsiFile> = Map.editorPsiFileMap
+    private val psiFileMap : ConcurrentHashMap<PsiFile, Editor> = Map.psiFileEditorMap
+    private val psiElementLocationMap : ConcurrentHashMap<Editor, PsiElementLocation> = Map.psiElementLocationMap
     private val logger : Logger = Logger.getInstance(AutoSwitchIMEService::class.java)
 
     fun prepare(editor: Editor) {
@@ -43,9 +46,12 @@ object AutoSwitchIMEService {
             val causedError = error.cause
             if (causedError is PsiInvalidElementAccessException) {
                 logger.info("psiFile缓存失效，尝试更新缓存并重新触发处理函数")
-                // 更新psiFile缓存
+                // 更新相关缓存
                 EditorUtil.getPsiFile(targetEditor)?.let { psiFile ->
-                    psiFileMap[targetEditor] = psiFile
+                    psiFileMap.remove(editorPsiFileMap[targetEditor] as PsiFile)
+                    editorPsiFileMap[targetEditor] = psiFile
+                    psiFileMap[psiFile] = targetEditor
+                    psiElementLocationMap[targetEditor] = PsiElementLocation()
                     // 重新触发 doHandle 函数
                     doHandle(targetEditor, cause)
                 }
@@ -61,7 +67,7 @@ object AutoSwitchIMEService {
                 return
             }
         }
-        psiFileMap.getOrDefault(editor,null)?.let { file ->
+        editorPsiFileMap.getOrDefault(editor,null)?.let { file ->
             val language = file.language
             val psiElement = file.findElementAt(editor.caretModel.offset)
             // 如果 psiElement为null
@@ -73,7 +79,7 @@ object AutoSwitchIMEService {
             // TODO 感觉这个判断放到 CustomEditorFactoryListener 的 editorCreated 中也是可行的
             if (PsiFileLanguage.isLanguageAutoSwitchEnabled(language)) {
                 logger.debug("${cause.description} 触发输入法自动切换相关动作")
-                SingleLanguageSwitchIMEDelegate.handle(language, cause, caretPositionChange, psiElement,isLineEnd)
+                SingleLanguageSwitchIMEDelegate.handle(language, cause, caretPositionChange, editor, psiElement, isLineEnd)
             }
         }
     }

@@ -45,7 +45,7 @@ enum class PsiFileLanguage(
         /**
          * 判断是否开启某语言输入法自动切换功能
          */
-        fun isLanguageAutoSwitchEnabled(language: Language) : Boolean {
+        fun isLanguageAutoSwitchEnabled(language: Language?) : Boolean {
             return when (language) {
                 JavaLanguage.INSTANCE -> SwitchIMESettings.instance.isJavaEnabled
                 KotlinLanguage.INSTANCE -> SwitchIMESettings.instance.isKotlinEnabled

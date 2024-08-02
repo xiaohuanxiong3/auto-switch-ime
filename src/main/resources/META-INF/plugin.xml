@@ -8,7 +8,7 @@
     <name>输入法自动切换插件</name>
 
     <!-- A displayed Vendor name or Organization ID displayed on the Plugins Page. -->
-    <vendor email="jiaLiDun@qq.com" url="https://www.JiaLiDun_Company.com">JiaLiDun Company</vendor>
+    <vendor email="Handsome Young@qq.com" url="https://www.JiaLiDun_Company.com">Handsome Young</vendor>
 
     <!-- Description of the plugin displayed on the Plugin Page and IDE Plugin Manager.
          Simple HTML elements (text formatting, paragraphs, and lists) can be added inside of <![CDATA[ ]]> tag.
@@ -37,6 +37,8 @@
         <editorActionHandler action="EditorRight" implementationClass="com.sqy.plugins.auto_switch_ime.cause.ArrowKeysPressedHandler" />
         <enterHandlerDelegate implementation="com.sqy.plugins.auto_switch_ime.cause.EnterHandler" />
         <typedHandler implementation="com.sqy.plugins.auto_switch_ime.cause.CharTypedHandler" />
+        <psi.treeChangeListener implementation="com.sqy.plugins.auto_switch_ime.psi.CustomPsiTreeChangeListener"/>
+<!--        <psi.treeChangePreprocessor implementation="com.sqy.plugins.auto_switch_ime.psi.CustomPsiTreeChangePreprocessorListener"/>-->
         <applicationConfigurable instance="com.sqy.plugins.auto_switch_ime.setting.SwitchIMEConfigurable"
                                  displayName="输入法自动切换插件配置"/>
         <notificationGroup displayType="BALLOON"
@@ -56,5 +58,9 @@
             <keyboard-shortcut keymap="$default" first-keystroke="shift ctrl S"/>
         </action>
     </actions>
+
+<!--    <projectListeners>-->
+<!--        <listener class="com.sqy.plugins.auto_switch_ime.CustomAnActionListener" topic="com.intellij.openapi.actionSystem.ex.AnActionListener"/>-->
+<!--    </projectListeners>-->
 
 </idea-plugin>

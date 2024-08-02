@@ -2,6 +2,7 @@ package com.sqy.plugins.auto_switch_ime.areaDecide
 
 import com.intellij.lang.Language
 import com.intellij.psi.PsiElement
+import com.sqy.plugins.auto_switch_ime.PsiElementLocation
 import org.jetbrains.kotlin.idea.KotlinLanguage
 
 object KotlinAreaDecider : AreaDecider {
@@ -12,6 +13,10 @@ object KotlinAreaDecider : AreaDecider {
 
     override fun isCodeArea(psiElement: PsiElement, isLineEnd: Boolean): Boolean {
         return false
+    }
+
+    override fun getPsiElementLocation(psiElement: PsiElement, isLineEnd: Boolean): PsiElementLocation {
+        return PsiElementLocation()
     }
 
     override fun language(): Language {
