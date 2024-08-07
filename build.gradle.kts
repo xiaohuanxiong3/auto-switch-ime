@@ -7,7 +7,7 @@ plugins {
     // kotlin("jvm") version "1.9.10"
 }
 
-group = "com.sqy"
+group = "com.friday"
 version = "1.0-SNAPSHOT"
 
 kotlin{

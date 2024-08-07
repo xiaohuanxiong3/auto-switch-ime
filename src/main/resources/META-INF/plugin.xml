@@ -30,37 +30,26 @@
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
     <extensions defaultExtensionNs="com.intellij">
         <!-- 自动切换输入法-->
-        <editorFactoryListener implementation="com.sqy.plugins.auto_switch_ime.CustomEditorFactoryListener"/>
-        <editorActionHandler action="EditorUp" implementationClass="com.sqy.plugins.auto_switch_ime.cause.ArrowKeysPressedHandler" />
-        <editorActionHandler action="EditorDown" implementationClass="com.sqy.plugins.auto_switch_ime.cause.ArrowKeysPressedHandler" />
-        <editorActionHandler action="EditorLeft" implementationClass="com.sqy.plugins.auto_switch_ime.cause.ArrowKeysPressedHandler" />
-        <editorActionHandler action="EditorRight" implementationClass="com.sqy.plugins.auto_switch_ime.cause.ArrowKeysPressedHandler" />
-        <enterHandlerDelegate implementation="com.sqy.plugins.auto_switch_ime.cause.EnterHandler" />
-        <typedHandler implementation="com.sqy.plugins.auto_switch_ime.cause.CharTypedHandler" />
-        <psi.treeChangeListener implementation="com.sqy.plugins.auto_switch_ime.psi.CustomPsiTreeChangeListener"/>
-<!--        <psi.treeChangePreprocessor implementation="com.sqy.plugins.auto_switch_ime.psi.CustomPsiTreeChangePreprocessorListener"/>-->
-        <applicationConfigurable instance="com.sqy.plugins.auto_switch_ime.setting.SwitchIMEConfigurable"
+        <editorFactoryListener implementation="com.friday.plugins.auto_switch_ime.CustomEditorFactoryListener"/>
+        <editorActionHandler action="EditorUp" implementationClass="com.friday.plugins.auto_switch_ime.trigger.ArrowKeysPressedHandler" />
+        <editorActionHandler action="EditorDown" implementationClass="com.friday.plugins.auto_switch_ime.trigger.ArrowKeysPressedHandler" />
+        <editorActionHandler action="EditorLeft" implementationClass="com.friday.plugins.auto_switch_ime.trigger.ArrowKeysPressedHandler" />
+        <editorActionHandler action="EditorRight" implementationClass="com.friday.plugins.auto_switch_ime.trigger.ArrowKeysPressedHandler" />
+        <psi.treeChangeListener implementation="com.friday.plugins.auto_switch_ime.trigger.CustomPsiTreeChangeListener"/>
+        <applicationConfigurable instance="com.friday.plugins.auto_switch_ime.setting.SwitchIMEConfigurable"
                                  displayName="输入法自动切换插件配置"/>
         <notificationGroup displayType="BALLOON"
                            id="auto-switch-ime-plugin"
                            isLogByDefault="false"/>
         <!-- 自动切换输入法-->
-
-        <!-- 自定义复制粘贴处理-->
-        <copyPastePreProcessor implementation="com.sqy.plugins.copy.CustomCopyPastePreProcessor" />
-        <!-- 自定义复制粘贴处理-->
     </extensions>
 
     <actions>
-        <action id="com.sqy.plugins.auto_switch_ime.action.SwitchAutoSwitchEnableAction"
-                class="com.sqy.plugins.auto_switch_ime.action.SwitchAutoSwitchEnableAction"
+        <action id="com.friday.plugins.auto_switch_ime.action.SwitchAutoSwitchEnableAction"
+                class="com.friday.plugins.auto_switch_ime.action.SwitchAutoSwitchEnableAction"
                 text="switch_single_language_auto_switch_enable" description="控制单语言输入法自动切换功能打开和关闭">
             <keyboard-shortcut keymap="$default" first-keystroke="shift ctrl S"/>
         </action>
     </actions>
-
-<!--    <projectListeners>-->
-<!--        <listener class="com.sqy.plugins.auto_switch_ime.CustomAnActionListener" topic="com.intellij.openapi.actionSystem.ex.AnActionListener"/>-->
-<!--    </projectListeners>-->
 
 </idea-plugin>
