@@ -7,7 +7,7 @@ import com.friday.plugins.auto_switch_ime.areaDecide.AreaDeciderDelegate
 import com.friday.plugins.auto_switch_ime.support.IMESwitchSupport
 import com.friday.plugins.auto_switch_ime.trigger.IMESwitchTrigger
 import com.friday.plugins.auto_switch_ime.trigger.IMESwitchTrigger.*
-import com.intellij.openapi.application.ApplicationManager
+import com.friday.plugins.auto_switch_ime.util.ApplicationUtil
 import com.intellij.openapi.editor.Editor
 import com.intellij.psi.PsiElement
 import java.util.concurrent.ConcurrentHashMap
@@ -53,11 +53,11 @@ abstract class AbstractSingleLanguageSwitchIMEHandler : SingleLanguageSwitchIMEH
 
     private fun doSwitch(psiElementLocation: PsiElementLocation) {
         if (psiElementLocation.isCommentArea) {
-            ApplicationManager.getApplication().executeOnPooledThread{
+            ApplicationUtil.executeOnPooledThread {
                 IMESwitchSupport.switchToZh(++IMESwitchSupport.seq)
             }
         } else {
-            ApplicationManager.getApplication().executeOnPooledThread{
+            ApplicationUtil.executeOnPooledThread {
                 IMESwitchSupport.switchToEn(++IMESwitchSupport.seq)
             }
         }

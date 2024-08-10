@@ -15,6 +15,8 @@ class SwitchIMESettings : PersistentStateComponent<SwitchIMESettings> {
 
     var isKotlinEnabled: Boolean = false
 
+    var switchToEnWhenCreateFromTemplate: Boolean = true
+
     override fun getState(): SwitchIMESettings? {
         return this
     }

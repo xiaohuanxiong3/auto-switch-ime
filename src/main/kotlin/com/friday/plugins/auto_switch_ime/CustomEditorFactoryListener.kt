@@ -6,6 +6,8 @@ import com.intellij.openapi.editor.event.DocumentEvent
 import com.intellij.openapi.editor.event.DocumentListener
 import com.intellij.openapi.editor.event.EditorFactoryEvent
 import com.intellij.openapi.editor.event.EditorFactoryListener
+import com.intellij.openapi.editor.ex.FocusChangeListener
+import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiFile
 import java.util.concurrent.ConcurrentHashMap
@@ -37,9 +39,9 @@ class CustomEditorFactoryListener : EditorFactoryListener {
             event.editor.addEditorMouseListener(MouseClickedHandler())
 //            event.editor.document.addDocumentListener(CustomDocumentListener())
             // 添加自定义的 FocusChangeListener（删除如上）
-//            event.editor.let {
-//                it as? EditorImpl
-//            }?.addFocusListener(FocusGainedListener())
+            event.editor.let {
+                it as? EditorImpl
+            }?.addFocusListener(FocusLostListener())
         }
     }
 
@@ -65,6 +67,15 @@ class CustomEditorFactoryListener : EditorFactoryListener {
         override fun documentChanged(event: DocumentEvent) {
             println(event)
         }
+    }
+
+    class FocusLostListener : FocusChangeListener {
+
+        override fun focusLost(editor: Editor) {
+            // 编辑器失去焦点时重置PsiElementLocation
+            Map.psiElementLocationMap[editor]?.reset()
+        }
+
     }
 
 }

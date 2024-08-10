@@ -63,20 +63,22 @@ object JavaAreaDecider : AreaDecider {
             psiElementLocation.isSecondLanguageEnabled = true
         }
         // 文档注释区
-        else if (psiElement.parent != null && psiElement.parent is PsiDocComment) {
-            psiElementLocation.setLocationId(psiElement.parent)
-            psiElementLocation.isCommentArea = true
-            psiElementLocation.isSecondLanguageEnabled = true
-        }
-        else if (psiElement.parent.parent != null && psiElement.parent.parent is PsiDocComment) {
-            psiElementLocation.setLocationId(psiElement.parent.parent)
-            psiElementLocation.isCommentArea = true
-            psiElementLocation.isSecondLanguageEnabled = true
-        }
-        else if (psiElement.parent.parent.parent != null && psiElement.parent.parent.parent is PsiDocComment) {
-            psiElementLocation.setLocationId(psiElement.parent.parent.parent)
-            psiElementLocation.isCommentArea = true
-            psiElementLocation.isSecondLanguageEnabled = true
+        else if (psiElement.parent != null) {
+            if (psiElement.parent is PsiDocComment) {
+                psiElementLocation.setLocationId(psiElement.parent)
+                psiElementLocation.isCommentArea = true
+                psiElementLocation.isSecondLanguageEnabled = true
+            } else if (psiElement.parent.parent != null) {
+                if (psiElement.parent.parent is PsiDocComment) {
+                    psiElementLocation.setLocationId(psiElement.parent.parent)
+                    psiElementLocation.isCommentArea = true
+                    psiElementLocation.isSecondLanguageEnabled = true
+                } else if (psiElement.parent.parent.parent != null && psiElement.parent.parent.parent is PsiDocComment) {
+                    psiElementLocation.setLocationId(psiElement.parent.parent.parent)
+                    psiElementLocation.isCommentArea = true
+                    psiElementLocation.isSecondLanguageEnabled = true
+                }
+            }
         }
         // 非注释区
         else {
