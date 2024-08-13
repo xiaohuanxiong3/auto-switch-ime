@@ -54,7 +54,7 @@
 
     <projectListeners>
 <!--        <listener class="com.friday.plugins.auto_switch_ime.CustomAnActionListener" topic="com.intellij.openapi.actionSystem.ex.AnActionListener" />-->
-        <listener class="com.friday.plugins.auto_switch_ime.listener.CreateFromTemplateActionListener" topic="com.intellij.openapi.actionSystem.ex.AnActionListener" />
+        <listener class="com.friday.plugins.auto_switch_ime.listener.CursorFirstInSomeWindowActionListener" topic="com.intellij.openapi.actionSystem.ex.AnActionListener" />
     </projectListeners>
 
 </idea-plugin>

@@ -12,20 +12,20 @@ class SwitchIMEConfigurable : ConfigurableWithId {
     override fun createComponent(): JComponent? {
         component.getJavaCheckBox().setSelected(settings.isJavaEnabled)
         component.getKotlinCheckBox().setSelected(settings.isKotlinEnabled)
-        component.getSwitchToEnWhenCreateFromTemplateCheckBox().setSelected(settings.switchToEnWhenCreateFromTemplate)
+        component.getSwitchToEnWhenCursorFirstInSomeWindow().setSelected(settings.switchToEnWhenCursorFirstInSomeWindow)
         return component.getPanel()
     }
 
     override fun isModified(): Boolean {
         return  component.getJavaCheckBox().isSelected != settings.isJavaEnabled ||
                 component.getKotlinCheckBox().isSelected != settings.isKotlinEnabled ||
-                component.getSwitchToEnWhenCreateFromTemplateCheckBox().isSelected != settings.switchToEnWhenCreateFromTemplate
+                component.getSwitchToEnWhenCursorFirstInSomeWindow().isSelected != settings.switchToEnWhenCursorFirstInSomeWindow
     }
 
     override fun apply() {
         settings.isJavaEnabled = component.getJavaCheckBox().isSelected
         settings.isKotlinEnabled = component.getKotlinCheckBox().isSelected
-        settings.switchToEnWhenCreateFromTemplate = component.getSwitchToEnWhenCreateFromTemplateCheckBox().isSelected
+        settings.switchToEnWhenCursorFirstInSomeWindow = component.getSwitchToEnWhenCursorFirstInSomeWindow().isSelected
     }
 
     override fun getDisplayName(): String {

@@ -13,7 +13,7 @@ class SwitchIMESettingsComponent {
 
     private val kotlinCheckBox : JCheckBox = JCheckBox("Kotlin")
 
-    private val switchToEnWhenCreateFromTemplateCheckBox : JCheckBox = JCheckBox("在新建文件时是否自动切换到英文")
+    private val switchToEnWhenCursorFirstInSomeWindowCheckBox : JCheckBox = JCheckBox("在新建目录或包、新建文件、全局搜索、全局查找字符串、全局查找文件时是否自动切换到英文")
 
     fun getPanel() : JPanel {
         initLayout()
@@ -27,7 +27,7 @@ class SwitchIMESettingsComponent {
         }
 
         val otherSettings = titledPanel("其他设置") {
-            add(switchToEnWhenCreateFromTemplateCheckBox, UI.fillX().wrap())
+            add(switchToEnWhenCursorFirstInSomeWindowCheckBox, UI.fillX().wrap())
         }
 
         mainPanel.addVertically(singleLanguageSetting)
@@ -42,8 +42,8 @@ class SwitchIMESettingsComponent {
         return kotlinCheckBox
     }
 
-    fun getSwitchToEnWhenCreateFromTemplateCheckBox() : JCheckBox {
-        return switchToEnWhenCreateFromTemplateCheckBox
+    fun getSwitchToEnWhenCursorFirstInSomeWindow() : JCheckBox {
+        return switchToEnWhenCursorFirstInSomeWindowCheckBox
     }
 
     companion object {
