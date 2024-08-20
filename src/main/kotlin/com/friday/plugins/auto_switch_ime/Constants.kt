@@ -10,5 +10,7 @@ object Constants {
 
     const val INIT_LOCATION_ID = "none"
 
+    const val CODE_LOCATION_ID = "code"
+
     const val SINGLE_LINE_COMMENT_BETWEEN = "SLCB"
 }

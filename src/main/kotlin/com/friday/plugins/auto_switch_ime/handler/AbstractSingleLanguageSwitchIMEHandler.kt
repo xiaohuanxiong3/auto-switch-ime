@@ -33,17 +33,31 @@ abstract class AbstractSingleLanguageSwitchIMEHandler : SingleLanguageSwitchIMEH
         }
     }
 
+    override fun handleMouseClicked(caretPositionChange: Int, editor: Editor, psiElement: PsiElement, isLineEnd: Boolean) {
+        switch(editor, psiElement, isLineEnd)
+    }
+
+    override fun handleArrowKeysPressed(caretPositionChange: Int, editor: Editor, psiElement: PsiElement, isLineEnd: Boolean) {
+        switch(editor, psiElement, isLineEnd)
+    }
+
+    override fun handlePsiFileChanged(editor: Editor, psiElement: PsiElement, isLineEnd: Boolean) {
+        switch(editor, psiElement, isLineEnd)
+    }
+
     override fun switch(editor: Editor, curPsiElement: PsiElement, isLineEnd : Boolean) {
         val psiElementLocation = psiElementLocationMap[editor]!!
         val curPsiElementLocation = AreaDeciderDelegate.getPsiElementLocation(getLanguage(), curPsiElement, isLineEnd)
-        // 初始状态，直接根据注释区和代码区进行输入法切换
-        if (psiElementLocation.isInitState()) {
-            doSwitch(curPsiElementLocation)
+        // 初始状态，直接返回
+        if (curPsiElementLocation.isInitState()) return
+        // 位于绝对的代码区域
+        if (curPsiElementLocation.isInStrictCodeLocation()) {
+            doSwitchInStrictCodeLocation()
             psiElementLocation.copyFrom(curPsiElementLocation)
         } else {
             // 判断当前location是否和上一location相同。
             // 如果相同，则不进行任何操作，由用户自己操作
-            // 否则，根据注释区和代码区进行输入法切换
+            // 否则，根据策略进行输入法切换
             if (!curPsiElementLocation.equal(psiElementLocation)) {
                 doSwitch(curPsiElementLocation)
                 psiElementLocation.copyFrom(curPsiElementLocation)
@@ -52,7 +66,10 @@ abstract class AbstractSingleLanguageSwitchIMEHandler : SingleLanguageSwitchIMEH
     }
 
     private fun doSwitch(psiElementLocation: PsiElementLocation) {
-        if (psiElementLocation.isCommentArea) {
+        if (!psiElementLocation.doSwitchWhenFirstInThisLocation) {
+            return
+        }
+        if (psiElementLocation.switchToSecondLanguageWhenFirstInThisLocation) {
             ApplicationUtil.executeOnPooledThread {
                 IMESwitchSupport.switchToZh(++IMESwitchSupport.seq)
             }
@@ -63,4 +80,9 @@ abstract class AbstractSingleLanguageSwitchIMEHandler : SingleLanguageSwitchIMEH
         }
     }
 
+    private fun doSwitchInStrictCodeLocation() {
+        ApplicationUtil.executeOnPooledThread {
+            IMESwitchSupport.switchToEn(++IMESwitchSupport.seq)
+        }
+    }
 }

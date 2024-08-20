@@ -35,6 +35,8 @@ object IMESwitchSupport {
     // 标识输入法切换方法调用序号，防止由于多线程问题导致的输入法切换错误问题
     // 序号本身的正确性选择相信IDEA
     // 暂时在windows上做测试
+    // 似乎所有涉及seq自增的操作都是在EDT线程上处理的
+    // 那@Volatile感觉没有必要
     var seq : Int = 0
 
     fun switchToZh(seq: Int) {

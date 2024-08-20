@@ -53,34 +53,39 @@ object JavaAreaDecider : AreaDecider {
         // 单行注释区
         if (psiElement.toString() == "PsiComment(END_OF_LINE_COMMENT)") {
             psiElementLocation.setLocationId(psiElement.prevSibling,psiElement.nextSibling)
-            psiElementLocation.isCommentArea = true
             psiElementLocation.isSecondLanguageEnabled = true
+            psiElementLocation.doSwitchWhenFirstInThisLocation = true
+            psiElementLocation.switchToSecondLanguageWhenFirstInThisLocation = true
             return psiElementLocation
         }
         // 单行注释区末尾
         if (isLineEnd && psiElement.prevSibling != null && psiElement.prevSibling.toString() == "PsiComment(END_OF_LINE_COMMENT)") {
             psiElementLocation.setLocationId(psiElement.prevSibling.prevSibling,psiElement)
-            psiElementLocation.isCommentArea = true
             psiElementLocation.isSecondLanguageEnabled = true
+            psiElementLocation.doSwitchWhenFirstInThisLocation = true
+            psiElementLocation.switchToSecondLanguageWhenFirstInThisLocation = true
             return psiElementLocation
         }
         // 文档注释区
         if (psiElement.parent != null) {
             if (psiElement.parent is PsiDocComment) {
                 psiElementLocation.setLocationId(psiElement.parent)
-                psiElementLocation.isCommentArea = true
                 psiElementLocation.isSecondLanguageEnabled = true
+                psiElementLocation.doSwitchWhenFirstInThisLocation = true
+                psiElementLocation.switchToSecondLanguageWhenFirstInThisLocation = true
                 return psiElementLocation
             } else if (psiElement.parent.parent != null) {
                 if (psiElement.parent.parent is PsiDocComment) {
                     psiElementLocation.setLocationId(psiElement.parent.parent)
-                    psiElementLocation.isCommentArea = true
                     psiElementLocation.isSecondLanguageEnabled = true
+                    psiElementLocation.doSwitchWhenFirstInThisLocation = true
+                    psiElementLocation.switchToSecondLanguageWhenFirstInThisLocation = true
                     return psiElementLocation
                 } else if (psiElement.parent.parent.parent != null && psiElement.parent.parent.parent is PsiDocComment) {
                     psiElementLocation.setLocationId(psiElement.parent.parent.parent)
-                    psiElementLocation.isCommentArea = true
                     psiElementLocation.isSecondLanguageEnabled = true
+                    psiElementLocation.doSwitchWhenFirstInThisLocation = true
+                    psiElementLocation.switchToSecondLanguageWhenFirstInThisLocation = true
                     return psiElementLocation
                 }
             }
@@ -93,12 +98,14 @@ object JavaAreaDecider : AreaDecider {
                 if (ElementType.STRING_LITERALS.contains(it.literalElementType)) {
                     psiElementLocation.setLocationId(psiElement.parent)
                     psiElementLocation.isSecondLanguageEnabled = true
+                    psiElementLocation.doSwitchWhenFirstInThisLocation = true
+                    psiElementLocation.switchToSecondLanguageWhenFirstInThisLocation = false
                     return psiElementLocation
                 }
             }
         }
         // 其他区域
-        psiElementLocation.setLocationId(psiElement)
+        psiElementLocation.inStrictCodeLocation()
         return psiElementLocation
     }
 

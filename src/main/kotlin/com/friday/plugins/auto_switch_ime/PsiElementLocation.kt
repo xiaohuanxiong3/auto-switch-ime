@@ -17,23 +17,36 @@ class PsiElementLocation {
     var isSecondLanguageEnabled : Boolean = false
 
     /**
+     * 第一次进入此区域是是否需要进行输入法切换
+     */
+    var doSwitchWhenFirstInThisLocation : Boolean = false
+
+    /**
+     * 第一次进入此区域是是否需要切换到第二语言（这里指汉语）
+     */
+    var switchToSecondLanguageWhenFirstInThisLocation : Boolean = false
+
+    /**
      * 是否位于注释区
+     * 暂时只作为标识
      */
     var isCommentArea : Boolean = false
 
     /**
      * 位置标识
      */
-    var locationId : String = Constants.INIT_LOCATION_ID
+    private var locationId : String? = null
 
     fun isInitState() : Boolean {
-        return locationId == Constants.INIT_LOCATION_ID
+        return locationId == null
     }
 
     fun reset() {
         isSecondLanguageEnabled = false
+        doSwitchWhenFirstInThisLocation = false
+        switchToSecondLanguageWhenFirstInThisLocation = false
         isCommentArea = false
-        locationId = Constants.INIT_LOCATION_ID
+        locationId = null
     }
 
     fun setLocationId(psiElement: PsiElement) {
@@ -67,8 +80,17 @@ class PsiElementLocation {
 
     fun copyFrom(that : PsiElementLocation) {
         isSecondLanguageEnabled = that.isSecondLanguageEnabled
+        doSwitchWhenFirstInThisLocation = that.doSwitchWhenFirstInThisLocation
+        switchToSecondLanguageWhenFirstInThisLocation = that.switchToSecondLanguageWhenFirstInThisLocation
         isCommentArea = that.isCommentArea
         locationId = that.locationId
     }
 
+    fun inStrictCodeLocation() {
+        this.locationId = Constants.CODE_LOCATION_ID
+    }
+
+    fun isInStrictCodeLocation() : Boolean {
+        return this.locationId == Constants.CODE_LOCATION_ID
+    }
 }

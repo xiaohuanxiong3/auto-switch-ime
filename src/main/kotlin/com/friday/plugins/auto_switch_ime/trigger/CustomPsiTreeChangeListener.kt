@@ -13,10 +13,7 @@ class CustomPsiTreeChangeListener : PsiTreeChangeAdapter() {
     // 此方法优点是几乎能覆盖所有需要输入法切换的场景
     //      缺点是触发次数频繁
     override fun childrenChanged(event: PsiTreeChangeEvent) {
-//        if (curAction != null) {
-//            return
-//        }
-        if (event !is PsiTreeChangeEventImpl || !event.isGenericChange  || !PsiFileLanguage.isLanguageAutoSwitchEnabled(event.file?.language)) {
+        if (!PsiFileLanguage.isLanguageAutoSwitchEnabled(event.file?.language) || event !is PsiTreeChangeEventImpl || !event.isGenericChange) {
             return
         }
         event.file?.let { psiFile ->
