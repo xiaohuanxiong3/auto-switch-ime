@@ -11,43 +11,6 @@ import com.intellij.psi.javadoc.PsiDocComment
 
 object JavaAreaDecider : AreaDecider {
 
-    override fun isCommentArea(psiElement: PsiElement, isLineEnd: Boolean): Boolean {
-        return isSingleLineCommentArea(psiElement, isLineEnd)
-                || isDocCommentArea(psiElement, isLineEnd)
-    }
-
-    override fun isCodeArea(psiElement: PsiElement, isLineEnd: Boolean): Boolean {
-        return true
-    }
-
-    /**
-     * 是否是单行注释区域
-     */
-    private fun isSingleLineCommentArea(psiElement: PsiElement, isLineEnd: Boolean): Boolean {
-        // 单行注释区
-        if (psiElement.toString() == "PsiComment(END_OF_LINE_COMMENT)") {
-            return true
-        }
-        // 单行注释区末尾（这里会将文档注释（多行注释）的最后的空格也判断为单行注释区，暂时不做处理）
-        if (isLineEnd && psiElement.prevSibling.toString() == "PsiComment(END_OF_LINE_COMMENT)") {
-            return true
-        }
-        return false
-    }
-
-    /**
-     * 是否是文档注释区域
-     */
-    private fun isDocCommentArea(psiElement: PsiElement, isLineEnd: Boolean): Boolean {
-        // 文档注释区
-        if ((psiElement.parent != null && psiElement.parent is PsiDocComment)
-            || (psiElement.parent.parent != null && psiElement.parent.parent is PsiDocComment)
-            || (psiElement.parent.parent.parent != null && psiElement.parent.parent.parent is PsiDocComment)) {
-            return true
-        }
-        return false
-    }
-
     override fun getPsiElementLocation(psiElement: PsiElement, isLineEnd: Boolean): PsiElementLocation {
         val psiElementLocation = PsiElementLocation()
         // 单行注释区
@@ -105,7 +68,7 @@ object JavaAreaDecider : AreaDecider {
             }
         }
         // 其他区域
-        psiElementLocation.inStrictCodeLocation()
+        psiElementLocation.inOtherLocation()
         return psiElementLocation
     }
 

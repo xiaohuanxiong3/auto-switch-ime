@@ -86,11 +86,11 @@ class PsiElementLocation {
         locationId = that.locationId
     }
 
-    fun inStrictCodeLocation() {
+    fun inOtherLocation() {
         this.locationId = Constants.CODE_LOCATION_ID
     }
 
-    fun isInStrictCodeLocation() : Boolean {
+    fun isInOtherLocation() : Boolean {
         return this.locationId == Constants.CODE_LOCATION_ID
     }
 }

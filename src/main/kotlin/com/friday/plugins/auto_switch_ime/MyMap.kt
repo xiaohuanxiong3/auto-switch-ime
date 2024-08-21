@@ -1,30 +1,17 @@
 package com.friday.plugins.auto_switch_ime
 
-import com.intellij.openapi.components.Service
 import com.intellij.openapi.editor.Editor
 import com.intellij.psi.PsiFile
 import java.util.concurrent.ConcurrentHashMap
 
-class Map {
-
-    @Service
-    class EditorPsiFileMap : ConcurrentHashMap<Editor,PsiFile>()
-
-    @Service
-    class PsiFileEditorMap : ConcurrentHashMap<PsiFile, Editor>()
-
-    @Service
-    class EditorCaretListenerMap() : ConcurrentHashMap<Editor, SwitchIMECaretListener>()
-
-    @Service
-    class EditorPsiElementLocationMap : ConcurrentHashMap<Editor, PsiElementLocation>()
+class MyMap {
 
     companion object{
         /**
          * 存储editor和caretListener的映射关系
          */
 //        val caretListenerMap : ConcurrentHashMap<Editor,SwitchIMECaretListener> = ApplicationManager.getApplication().getService(EditorCaretListenerMap::class.java)
-        val caretListenerMap : ConcurrentHashMap<Editor, SwitchIMECaretListener> = ConcurrentHashMap<Editor, SwitchIMECaretListener>()
+        val caretListenerMap : ConcurrentHashMap<Editor, CustomEditorFactoryListener.SwitchIMECaretListener> = ConcurrentHashMap<Editor, CustomEditorFactoryListener.SwitchIMECaretListener>()
         /**
          * 存储editor和psiFile的映射关系
          */
@@ -40,5 +27,10 @@ class Map {
          */
 //        val psiElementLocationMap : ConcurrentHashMap<Editor, PsiElementLocation> = ApplicationManager.getApplication().getService(EditorPsiElementLocationMap::class.java)
         val psiElementLocationMap : ConcurrentHashMap<Editor, PsiElementLocation> = ConcurrentHashMap<Editor, PsiElementLocation>()
+
+        /**
+         * 存储editor和 自定义的 documentListener的映射关系
+         */
+        val documentListenerMap : ConcurrentHashMap<Editor, CustomEditorFactoryListener.DocumentChangeCountListener> = ConcurrentHashMap<Editor, CustomEditorFactoryListener.DocumentChangeCountListener>()
     }
 }

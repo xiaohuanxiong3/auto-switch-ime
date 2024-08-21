@@ -6,6 +6,7 @@ import com.intellij.psi.PsiTreeChangeAdapter
 import com.intellij.psi.PsiTreeChangeEvent
 import com.intellij.psi.impl.PsiTreeChangeEventImpl
 
+@Deprecated("有更好的解决方案了,见 DocumentChangedAnActionListener")
 class CustomPsiTreeChangeListener : PsiTreeChangeAdapter() {
 
     // TODO 使用 ReadAction 读取 PsiFile 的内容提供安全和一致性保障

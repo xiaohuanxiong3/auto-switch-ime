@@ -12,14 +12,6 @@ import org.jetbrains.kotlin.psi.KtStringTemplateExpression
 object KotlinAreaDecider : AreaDecider {
     private const val LINE_COMMENT_NAME = "PsiComment(EOL_COMMENT)"
 
-    override fun isCommentArea(psiElement: PsiElement, isLineEnd: Boolean): Boolean {
-        return false
-    }
-
-    override fun isCodeArea(psiElement: PsiElement, isLineEnd: Boolean): Boolean {
-        return false
-    }
-
     override fun getPsiElementLocation(psiElement: PsiElement, isLineEnd: Boolean): PsiElementLocation {
         val psiElementLocation = PsiElementLocation()
         // 单行注释区
@@ -63,7 +55,7 @@ object KotlinAreaDecider : AreaDecider {
             return psiElementLocation
         }
         // 其他区域
-        psiElementLocation.inStrictCodeLocation()
+        psiElementLocation.inOtherLocation()
         return psiElementLocation
     }
 

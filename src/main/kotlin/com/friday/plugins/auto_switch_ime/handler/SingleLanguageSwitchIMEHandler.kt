@@ -13,11 +13,17 @@ interface SingleLanguageSwitchIMEHandler {
 
     fun handle(trigger: IMESwitchTrigger, caretPositionChange: Int, editor: Editor, psiElement: PsiElement, isLineEnd: Boolean)
     
-    fun handleMouseClicked(caretPositionChange: Int, editor: Editor, psiElement: PsiElement, isLineEnd: Boolean)
+    fun handleWhenMouseClicked(caretPositionChange: Int, editor: Editor, psiElement: PsiElement, isLineEnd: Boolean)
 
-    fun handleArrowKeysPressed(caretPositionChange: Int, editor: Editor, psiElement: PsiElement, isLineEnd: Boolean)
+    fun handleWhenArrowKeysPressed(caretPositionChange: Int, editor: Editor, psiElement: PsiElement, isLineEnd: Boolean)
 
-    fun handlePsiFileChanged(editor: Editor, psiElement: PsiElement, isLineEnd: Boolean)
+    fun handleWhenPsiFileChanged(editor: Editor, psiElement: PsiElement, isLineEnd: Boolean)
+
+    fun handleWhenAnActionHappened(editor: Editor, psiElement: PsiElement, isLineEnd: Boolean)
+
+    fun shouldHandleWhenCharTyped(c : Char) : Boolean
+
+    fun handleWhenCharTyped(editor: Editor, psiElement: PsiElement, isLineEnd: Boolean)
 
     fun switch(editor: Editor, curPsiElement: PsiElement, isLineEnd : Boolean)
 

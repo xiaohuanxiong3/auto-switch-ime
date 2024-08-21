@@ -1,7 +1,7 @@
 package com.friday.plugins.auto_switch_ime.handler
 
 import com.friday.plugins.auto_switch_ime.Constants
-import com.friday.plugins.auto_switch_ime.Map
+import com.friday.plugins.auto_switch_ime.MyMap
 import com.friday.plugins.auto_switch_ime.PsiElementLocation
 import com.friday.plugins.auto_switch_ime.areaDecide.AreaDeciderDelegate
 import com.friday.plugins.auto_switch_ime.support.IMESwitchSupport
@@ -12,9 +12,9 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.psi.PsiElement
 import java.util.concurrent.ConcurrentHashMap
 
-abstract class AbstractSingleLanguageSwitchIMEHandler : SingleLanguageSwitchIMEHandler{
+abstract class AbstractSingleLanguageSwitchIMEHandler : SingleLanguageSwitchIMEHandler {
 
-    private val psiElementLocationMap : ConcurrentHashMap<Editor, PsiElementLocation> = Map.psiElementLocationMap
+    private val psiElementLocationMap : ConcurrentHashMap<Editor, PsiElementLocation> = MyMap.psiElementLocationMap
 
     override fun handle(
         trigger: IMESwitchTrigger,
@@ -24,24 +24,38 @@ abstract class AbstractSingleLanguageSwitchIMEHandler : SingleLanguageSwitchIMEH
         isLineEnd: Boolean
     ) {
         when (trigger.description) {
-            MOUSE_CLICKED.description -> handleMouseClicked(caretPositionChange, editor, psiElement, isLineEnd)
-            ARROW_KEYS_PRESSED.description -> handleArrowKeysPressed(caretPositionChange, editor, psiElement, isLineEnd)
-            PSI_FILE_CHANGED.description -> handlePsiFileChanged(editor, psiElement, isLineEnd)
+            CHAR_TYPED.description -> handleWhenCharTyped(editor, psiElement, isLineEnd)
+            MOUSE_CLICKED.description -> handleWhenMouseClicked(caretPositionChange, editor, psiElement, isLineEnd)
+            ARROW_KEYS_PRESSED.description -> handleWhenArrowKeysPressed(caretPositionChange, editor, psiElement, isLineEnd)
+            PSI_FILE_CHANGED.description -> handleWhenPsiFileChanged(editor, psiElement, isLineEnd)
+            AN_ACTION_HAPPENED.description -> handleWhenAnActionHappened(editor, psiElement, isLineEnd)
             else -> {
                 throw Error(Constants.UNREACHABLE_CODE + "in SingleLanguageSwitchIMEHandler.handle method")
             }
         }
     }
 
-    override fun handleMouseClicked(caretPositionChange: Int, editor: Editor, psiElement: PsiElement, isLineEnd: Boolean) {
+    override fun shouldHandleWhenCharTyped(c: Char): Boolean {
+        return false
+    }
+
+    override fun handleWhenCharTyped(editor: Editor, psiElement: PsiElement, isLineEnd: Boolean) {
         switch(editor, psiElement, isLineEnd)
     }
 
-    override fun handleArrowKeysPressed(caretPositionChange: Int, editor: Editor, psiElement: PsiElement, isLineEnd: Boolean) {
+    override fun handleWhenMouseClicked(caretPositionChange: Int, editor: Editor, psiElement: PsiElement, isLineEnd: Boolean) {
         switch(editor, psiElement, isLineEnd)
     }
 
-    override fun handlePsiFileChanged(editor: Editor, psiElement: PsiElement, isLineEnd: Boolean) {
+    override fun handleWhenArrowKeysPressed(caretPositionChange: Int, editor: Editor, psiElement: PsiElement, isLineEnd: Boolean) {
+        switch(editor, psiElement, isLineEnd)
+    }
+
+    override fun handleWhenPsiFileChanged(editor: Editor, psiElement: PsiElement, isLineEnd: Boolean) {
+        switch(editor, psiElement, isLineEnd)
+    }
+
+    override fun handleWhenAnActionHappened(editor: Editor, psiElement: PsiElement, isLineEnd: Boolean) {
         switch(editor, psiElement, isLineEnd)
     }
 
@@ -50,9 +64,9 @@ abstract class AbstractSingleLanguageSwitchIMEHandler : SingleLanguageSwitchIMEH
         val curPsiElementLocation = AreaDeciderDelegate.getPsiElementLocation(getLanguage(), curPsiElement, isLineEnd)
         // 初始状态，直接返回
         if (curPsiElementLocation.isInitState()) return
-        // 位于绝对的代码区域
-        if (curPsiElementLocation.isInStrictCodeLocation()) {
-            doSwitchInStrictCodeLocation()
+        // 位于其他区域
+        if (curPsiElementLocation.isInOtherLocation()) {
+            doSwitchInOtherLocation()
             psiElementLocation.copyFrom(curPsiElementLocation)
         } else {
             // 判断当前location是否和上一location相同。
@@ -80,7 +94,7 @@ abstract class AbstractSingleLanguageSwitchIMEHandler : SingleLanguageSwitchIMEH
         }
     }
 
-    private fun doSwitchInStrictCodeLocation() {
+    private fun doSwitchInOtherLocation() {
         ApplicationUtil.executeOnPooledThread {
             IMESwitchSupport.switchToEn(++IMESwitchSupport.seq)
         }

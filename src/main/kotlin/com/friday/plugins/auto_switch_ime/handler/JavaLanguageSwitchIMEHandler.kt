@@ -8,6 +8,12 @@ import com.intellij.lang.java.JavaLanguage
  */
 object JavaLanguageSwitchIMEHandler : AbstractSingleLanguageSwitchIMEHandler() {
 
+    private val shouldHandleCharSet : List<Char> = listOf('/', '*','"')
+
+    override fun shouldHandleWhenCharTyped(c: Char): Boolean {
+        return shouldHandleCharSet.contains(c)
+    }
+
     override fun getLanguage(): Language {
         return JavaLanguage.INSTANCE
     }

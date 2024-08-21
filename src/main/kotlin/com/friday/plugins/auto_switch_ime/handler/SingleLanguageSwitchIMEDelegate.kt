@@ -12,4 +12,8 @@ object SingleLanguageSwitchIMEDelegate {
         PsiFileLanguage.getSingleLanguageSwitchIMEHandler(language)?.handle(trigger, caretPositionChange, editor, psiElement, isLineEnd)
     }
 
+    fun shouldHandleWhenCharTyped(language: Language, char: Char) : Boolean{
+        return PsiFileLanguage.getSingleLanguageSwitchIMEHandler(language)?.shouldHandleWhenCharTyped(char)?:false
+    }
+
 }

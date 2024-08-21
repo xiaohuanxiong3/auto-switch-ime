@@ -1,9 +1,9 @@
 package com.friday.plugins.auto_switch_ime.service
 
-import com.friday.plugins.auto_switch_ime.Map
+import com.friday.plugins.auto_switch_ime.CustomEditorFactoryListener
+import com.friday.plugins.auto_switch_ime.MyMap
 import com.friday.plugins.auto_switch_ime.PsiElementLocation
 import com.friday.plugins.auto_switch_ime.PsiFileLanguage
-import com.friday.plugins.auto_switch_ime.SwitchIMECaretListener
 import com.friday.plugins.auto_switch_ime.handler.SingleLanguageSwitchIMEDelegate
 import com.friday.plugins.auto_switch_ime.trigger.IMESwitchTrigger
 import com.friday.plugins.auto_switch_ime.util.EditorUtil
@@ -14,6 +14,7 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.fileTypes.PlainTextLanguage
+import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiWhiteSpace
@@ -22,10 +23,10 @@ import java.util.concurrent.ConcurrentHashMap
 
 object AutoSwitchIMEService {
 
-    private val caretListenerMap : ConcurrentHashMap<Editor, SwitchIMECaretListener> = Map.caretListenerMap
-    private val editorPsiFileMap : ConcurrentHashMap<Editor, PsiFile> = Map.editorPsiFileMap
-    private val psiFileEditorMap : ConcurrentHashMap<PsiFile, Editor> = Map.psiFileEditorMap
-    private val psiElementLocationMap : ConcurrentHashMap<Editor, PsiElementLocation> = Map.psiElementLocationMap
+    private val caretListenerMap : ConcurrentHashMap<Editor, CustomEditorFactoryListener.SwitchIMECaretListener> = MyMap.caretListenerMap
+    private val editorPsiFileMap : ConcurrentHashMap<Editor, PsiFile> = MyMap.editorPsiFileMap
+    private val psiFileEditorMap : ConcurrentHashMap<PsiFile, Editor> = MyMap.psiFileEditorMap
+    private val psiElementLocationMap : ConcurrentHashMap<Editor, PsiElementLocation> = MyMap.psiElementLocationMap
     private val logger : Logger = Logger.getInstance(AutoSwitchIMEService::class.java)
 
     fun prepareWithNoPsiFileChanged(editor: Editor) {
@@ -59,6 +60,54 @@ object AutoSwitchIMEService {
         }
     }
 
+    /**
+     * 事件发生，导致文件发生变化时，进行输入法切换相关操作
+     */
+    fun handleWhenAnActionHappened(editor: Editor) {
+        checkAndHandleCache(editor)
+        editorPsiFileMap[editor]?.let { psiFile ->
+            val documentManager = PsiDocumentManager.getInstance(psiFile.project)
+            editor.document.let { document ->
+                documentManager.performForCommittedDocument(document) {
+                    val language = psiFile.language
+                    if (!PsiFileLanguage.isLanguageAutoSwitchEnabled(language)) {
+                        return@performForCommittedDocument
+                    }
+                    val psiElement = psiFile.findElementAt(editor.caretModel.offset)
+                    // 如果 psiElement为null
+                    if (psiElement == null) {
+                        handleSwitchWhenNullPsiElement(editor,language)
+                        return@performForCommittedDocument
+                    }
+                    val isLineEnd = isLineEnd(editor.caretModel.offset, psiElement)
+                    SingleLanguageSwitchIMEDelegate.handle(language, IMESwitchTrigger.AN_ACTION_HAPPENED, 0, editor, psiElement, isLineEnd)
+                }
+            }
+        }
+    }
+
+    fun handleWhenCharTyped(c : Char, psiFile: PsiFile) {
+        if (!SingleLanguageSwitchIMEDelegate.shouldHandleWhenCharTyped(psiFile.language, c)) return
+        val documentManager = PsiDocumentManager.getInstance(psiFile.project)
+        documentManager.getDocument(psiFile)?.let { document ->
+            documentManager.performForCommittedDocument(document) {
+                checkAndHandleCache(psiFile)
+                psiFileEditorMap[psiFile]?.let { editor ->
+                    val language = psiFile.language
+                    val psiElement = psiFile.findElementAt(editor.caretModel.offset)
+                    // 如果 psiElement为null
+                    if (psiElement == null) {
+                        handleSwitchWhenNullPsiElement(editor, language)
+                        return@performForCommittedDocument
+                    }
+                    val isLineEnd = isLineEnd(editor.caretModel.offset, psiElement)
+                    SingleLanguageSwitchIMEDelegate.handle(language, IMESwitchTrigger.CHAR_TYPED, 0, editor, psiElement, isLineEnd)
+                }
+            }
+        }
+    }
+
+    @Deprecated("有更好的解决方案了")
     fun handleWithPsiFileChanged(psiFile: PsiFile) {
         checkAndHandleCache(psiFile)
         psiFileEditorMap[psiFile]?.let { editor ->
