@@ -7,8 +7,8 @@ import com.intellij.psi.PsiElement
 
 object AreaDeciderDelegate {
 
-    fun getPsiElementLocation(language: Language, psiElement: PsiElement, isLineEnd : Boolean) : PsiElementLocation {
-        return PsiFileLanguage.getAreaDecider(language)?.getPsiElementLocation(psiElement, isLineEnd)?: PsiElementLocation()
+    fun getPsiElementLocation(language: Language, psiElement: PsiElement, isElementStart : Boolean, isLineEnd : Boolean) : PsiElementLocation {
+        return PsiFileLanguage.getAreaDecider(language)?.getPsiElementLocation(psiElement, isElementStart, isLineEnd)?: PsiElementLocation()
     }
 
 }

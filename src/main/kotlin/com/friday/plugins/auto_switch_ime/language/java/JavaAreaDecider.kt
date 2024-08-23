@@ -1,6 +1,7 @@
-package com.friday.plugins.auto_switch_ime.areaDecide
+package com.friday.plugins.auto_switch_ime.language.java
 
 import com.friday.plugins.auto_switch_ime.PsiElementLocation
+import com.friday.plugins.auto_switch_ime.areaDecide.AreaDecider
 import com.intellij.lang.Language
 import com.intellij.lang.java.JavaLanguage
 import com.intellij.psi.PsiElement
@@ -11,10 +12,10 @@ import com.intellij.psi.javadoc.PsiDocComment
 
 object JavaAreaDecider : AreaDecider {
 
-    override fun getPsiElementLocation(psiElement: PsiElement, isLineEnd: Boolean): PsiElementLocation {
+    override fun getPsiElementLocation(psiElement: PsiElement, isElementStart: Boolean, isLineEnd: Boolean): PsiElementLocation {
         val psiElementLocation = PsiElementLocation()
         // 单行注释区
-        if (psiElement.toString() == "PsiComment(END_OF_LINE_COMMENT)") {
+        if (psiElement.toString() == "PsiComment(END_OF_LINE_COMMENT)" && !isElementStart) {
             psiElementLocation.setLocationId(psiElement.prevSibling,psiElement.nextSibling)
             psiElementLocation.isSecondLanguageEnabled = true
             psiElementLocation.doSwitchWhenFirstInThisLocation = true
@@ -31,20 +32,20 @@ object JavaAreaDecider : AreaDecider {
         }
         // 文档注释区
         if (psiElement.parent != null) {
-            if (psiElement.parent is PsiDocComment) {
+            if (psiElement.parent is PsiDocComment && !isElementStart) {
                 psiElementLocation.setLocationId(psiElement.parent)
                 psiElementLocation.isSecondLanguageEnabled = true
                 psiElementLocation.doSwitchWhenFirstInThisLocation = true
                 psiElementLocation.switchToSecondLanguageWhenFirstInThisLocation = true
                 return psiElementLocation
             } else if (psiElement.parent.parent != null) {
-                if (psiElement.parent.parent is PsiDocComment) {
+                if (psiElement.parent.parent is PsiDocComment && !isElementStart) {
                     psiElementLocation.setLocationId(psiElement.parent.parent)
                     psiElementLocation.isSecondLanguageEnabled = true
                     psiElementLocation.doSwitchWhenFirstInThisLocation = true
                     psiElementLocation.switchToSecondLanguageWhenFirstInThisLocation = true
                     return psiElementLocation
-                } else if (psiElement.parent.parent.parent != null && psiElement.parent.parent.parent is PsiDocComment) {
+                } else if (psiElement.parent.parent.parent != null && psiElement.parent.parent.parent is PsiDocComment && !isElementStart) {
                     psiElementLocation.setLocationId(psiElement.parent.parent.parent)
                     psiElementLocation.isSecondLanguageEnabled = true
                     psiElementLocation.doSwitchWhenFirstInThisLocation = true

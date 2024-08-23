@@ -4,8 +4,10 @@ import com.friday.plugins.auto_switch_ime.CustomEditorFactoryListener
 import com.friday.plugins.auto_switch_ime.MyMap
 import com.friday.plugins.auto_switch_ime.PsiElementLocation
 import com.friday.plugins.auto_switch_ime.PsiFileLanguage
+import com.friday.plugins.auto_switch_ime.handler.HandleStrategy
 import com.friday.plugins.auto_switch_ime.handler.SingleLanguageSwitchIMEDelegate
 import com.friday.plugins.auto_switch_ime.trigger.IMESwitchTrigger
+import com.friday.plugins.auto_switch_ime.util.ApplicationUtil
 import com.friday.plugins.auto_switch_ime.util.EditorUtil
 import com.friday.plugins.auto_switch_ime.util.PsiFileUtil
 import com.intellij.lang.Language
@@ -52,11 +54,11 @@ object AutoSwitchIMEService {
             val psiElement = psiFile.findElementAt(editor.caretModel.offset)
             // 如果 psiElement为null
             if (psiElement == null) {
-                handleSwitchWhenNullPsiElement(editor,language)
+                handleWhenNullPsiElement(editor,language)
                 return
             }
             val isLineEnd = isLineEnd(editor.caretModel.offset, psiElement)
-            SingleLanguageSwitchIMEDelegate.handle(language, trigger, caretPositionChange, editor, psiElement, isLineEnd)
+            SingleLanguageSwitchIMEDelegate.handle(language, trigger, HandleStrategy.UPDATE_LOCATION_AND_SWITCH, editor, psiElement, isLineEnd)
         }
     }
 
@@ -76,32 +78,36 @@ object AutoSwitchIMEService {
                     val psiElement = psiFile.findElementAt(editor.caretModel.offset)
                     // 如果 psiElement为null
                     if (psiElement == null) {
-                        handleSwitchWhenNullPsiElement(editor,language)
+                        handleWhenNullPsiElement(editor,language)
                         return@performForCommittedDocument
                     }
                     val isLineEnd = isLineEnd(editor.caretModel.offset, psiElement)
-                    SingleLanguageSwitchIMEDelegate.handle(language, IMESwitchTrigger.AN_ACTION_HAPPENED, 0, editor, psiElement, isLineEnd)
+                    SingleLanguageSwitchIMEDelegate.handle(language, IMESwitchTrigger.AN_ACTION_HAPPENED, HandleStrategy.UPDATE_LOCATION_AND_SWITCH, editor, psiElement, isLineEnd)
                 }
             }
         }
     }
 
-    fun handleWhenCharTyped(c : Char, psiFile: PsiFile) {
-        if (!SingleLanguageSwitchIMEDelegate.shouldHandleWhenCharTyped(psiFile.language, c)) return
-        val documentManager = PsiDocumentManager.getInstance(psiFile.project)
-        documentManager.getDocument(psiFile)?.let { document ->
-            documentManager.performForCommittedDocument(document) {
-                checkAndHandleCache(psiFile)
-                psiFileEditorMap[psiFile]?.let { editor ->
-                    val language = psiFile.language
-                    val psiElement = psiFile.findElementAt(editor.caretModel.offset)
-                    // 如果 psiElement为null
-                    if (psiElement == null) {
-                        handleSwitchWhenNullPsiElement(editor, language)
-                        return@performForCommittedDocument
+    fun handleWhenCharTyped(c : Char, psiFile: PsiFile, editor: Editor) {
+        val handleStrategy = SingleLanguageSwitchIMEDelegate.getHandleStrategyWhenCharTyped(psiFile.language, c, editor)
+        if (handleStrategy == HandleStrategy.DO_NOT_HANDLE) return
+        // 在当前正在处理的所有UI事件完成后，执行下面的代码
+        ApplicationUtil.invokeLater {
+            val documentManager = PsiDocumentManager.getInstance(psiFile.project)
+            documentManager.getDocument(psiFile)?.let { document ->
+                documentManager.performForCommittedDocument(document) {
+                    checkAndHandleCache(psiFile)
+                    psiFileEditorMap[psiFile]?.let { editor ->
+                        val language = psiFile.language
+                        val psiElement = psiFile.findElementAt(editor.caretModel.offset)
+                        // 如果 psiElement为null
+                        if (psiElement == null) {
+                            handleWhenNullPsiElement(editor, language)
+                            return@performForCommittedDocument
+                        }
+                        val isLineEnd = isLineEnd(editor.caretModel.offset, psiElement)
+                        SingleLanguageSwitchIMEDelegate.handle(language, IMESwitchTrigger.CHAR_TYPED, handleStrategy, editor, psiElement, isLineEnd)
                     }
-                    val isLineEnd = isLineEnd(editor.caretModel.offset, psiElement)
-                    SingleLanguageSwitchIMEDelegate.handle(language, IMESwitchTrigger.CHAR_TYPED, 0, editor, psiElement, isLineEnd)
                 }
             }
         }
@@ -115,16 +121,23 @@ object AutoSwitchIMEService {
             val psiElement = psiFile.findElementAt(editor.caretModel.offset)
             // 如果 psiElement为null
             if (psiElement == null) {
-                handleSwitchWhenNullPsiElement(editor,language)
+                handleWhenNullPsiElement(editor,language)
                 return
             }
             val isLineEnd = isLineEnd(editor.caretModel.offset, psiElement)
-            SingleLanguageSwitchIMEDelegate.handle(language, IMESwitchTrigger.PSI_FILE_CHANGED, 0, editor, psiElement, isLineEnd)
+            SingleLanguageSwitchIMEDelegate.handle(
+                language,
+                IMESwitchTrigger.PSI_FILE_CHANGED,
+                HandleStrategy.UPDATE_LOCATION_AND_SWITCH,
+                editor,
+                psiElement,
+                isLineEnd
+            )
         }
     }
 
     // 当psiElement为null时，处理输入法切换
-    private fun handleSwitchWhenNullPsiElement(editor: Editor,language: Language) {
+    private fun handleWhenNullPsiElement(editor: Editor, language: Language) {
         when(language) {
             JavaLanguage.INSTANCE -> {
 //                IMESwitchSupport.switchToEn()

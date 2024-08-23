@@ -13,4 +13,8 @@ object ApplicationUtil {
         application.executeOnPooledThread(runnable)
     }
 
+    fun invokeLater(runnable: () -> Unit) {
+        application.invokeLater(runnable)
+    }
+
 }

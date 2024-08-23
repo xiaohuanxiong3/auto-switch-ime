@@ -1,6 +1,7 @@
-package com.friday.plugins.auto_switch_ime.areaDecide
+package com.friday.plugins.auto_switch_ime.language.kotlin
 
 import com.friday.plugins.auto_switch_ime.PsiElementLocation
+import com.friday.plugins.auto_switch_ime.areaDecide.AreaDecider
 import com.intellij.lang.Language
 import com.intellij.psi.PsiDocCommentBase
 import com.intellij.psi.PsiElement
@@ -12,10 +13,10 @@ import org.jetbrains.kotlin.psi.KtStringTemplateExpression
 object KotlinAreaDecider : AreaDecider {
     private const val LINE_COMMENT_NAME = "PsiComment(EOL_COMMENT)"
 
-    override fun getPsiElementLocation(psiElement: PsiElement, isLineEnd: Boolean): PsiElementLocation {
+    override fun getPsiElementLocation(psiElement: PsiElement, isElementStart: Boolean, isLineEnd: Boolean): PsiElementLocation {
         val psiElementLocation = PsiElementLocation()
         // 单行注释区
-        if (psiElement.toString() == LINE_COMMENT_NAME) {
+        if (psiElement.toString() == LINE_COMMENT_NAME && !isElementStart) {
             psiElementLocation.setLocationId(psiElement.prevSibling,psiElement.nextSibling)
             psiElementLocation.isSecondLanguageEnabled = true
             psiElementLocation.doSwitchWhenFirstInThisLocation = true
@@ -32,7 +33,7 @@ object KotlinAreaDecider : AreaDecider {
         }
         // 文档注释区
         val psiDocComment = PsiTreeUtil.getParentOfType(psiElement, PsiDocCommentBase::class.java)
-        if (psiDocComment != null) {
+        if (psiDocComment != null && !isElementStart) {
             psiElementLocation.setLocationId(psiDocComment)
             psiElementLocation.isSecondLanguageEnabled = true
             psiElementLocation.doSwitchWhenFirstInThisLocation = true

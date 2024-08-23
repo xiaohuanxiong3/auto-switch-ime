@@ -12,7 +12,7 @@ interface AreaDecider {
     /**
      * 根据PsiElement 获取其对应的 PsiElementLocation
      */
-    fun getPsiElementLocation(psiElement: PsiElement, isLineEnd: Boolean): PsiElementLocation
+    fun getPsiElementLocation(psiElement: PsiElement, isElementStart: Boolean, isLineEnd: Boolean): PsiElementLocation
 
     /**
      * 语言

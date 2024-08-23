@@ -1,10 +1,10 @@
 package com.friday.plugins.auto_switch_ime
 
 import com.friday.plugins.auto_switch_ime.areaDecide.AreaDecider
-import com.friday.plugins.auto_switch_ime.areaDecide.JavaAreaDecider
-import com.friday.plugins.auto_switch_ime.areaDecide.KotlinAreaDecider
-import com.friday.plugins.auto_switch_ime.handler.JavaLanguageSwitchIMEHandler
-import com.friday.plugins.auto_switch_ime.handler.KotlinLanguageSwitchIMEHandler
+import com.friday.plugins.auto_switch_ime.language.java.JavaAreaDecider
+import com.friday.plugins.auto_switch_ime.language.kotlin.KotlinAreaDecider
+import com.friday.plugins.auto_switch_ime.language.java.JavaLanguageSwitchIMEHandler
+import com.friday.plugins.auto_switch_ime.language.kotlin.KotlinLanguageSwitchIMEHandler
 import com.friday.plugins.auto_switch_ime.handler.SingleLanguageSwitchIMEHandler
 import com.friday.plugins.auto_switch_ime.setting.SwitchIMESettings
 import com.intellij.lang.Language

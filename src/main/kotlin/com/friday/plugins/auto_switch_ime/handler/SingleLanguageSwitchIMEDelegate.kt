@@ -8,12 +8,12 @@ import com.intellij.psi.PsiElement
 
 object SingleLanguageSwitchIMEDelegate {
 
-    fun handle(language: Language, trigger: IMESwitchTrigger, caretPositionChange: Int, editor: Editor, psiElement: PsiElement, isLineEnd: Boolean) {
-        PsiFileLanguage.getSingleLanguageSwitchIMEHandler(language)?.handle(trigger, caretPositionChange, editor, psiElement, isLineEnd)
+    fun getHandleStrategyWhenCharTyped(language: Language, c: Char, editor: Editor): HandleStrategy {
+        return PsiFileLanguage.getSingleLanguageSwitchIMEHandler(language)?.getHandleStrategyWhenCharTyped(c, editor)?:HandleStrategy.DO_NOT_HANDLE
     }
 
-    fun shouldHandleWhenCharTyped(language: Language, char: Char) : Boolean{
-        return PsiFileLanguage.getSingleLanguageSwitchIMEHandler(language)?.shouldHandleWhenCharTyped(char)?:false
+    fun handle(language: Language, trigger: IMESwitchTrigger, handleStrategy: HandleStrategy, editor: Editor, psiElement: PsiElement, isLineEnd: Boolean) {
+        PsiFileLanguage.getSingleLanguageSwitchIMEHandler(language)?.handle(trigger, handleStrategy, editor, psiElement, isLineEnd)
     }
 
 }

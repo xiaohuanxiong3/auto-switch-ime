@@ -18,50 +18,49 @@ abstract class AbstractSingleLanguageSwitchIMEHandler : SingleLanguageSwitchIMEH
 
     override fun handle(
         trigger: IMESwitchTrigger,
-        caretPositionChange: Int,
+        handleStrategy: HandleStrategy,
         editor: Editor,
         psiElement: PsiElement,
         isLineEnd: Boolean
     ) {
         when (trigger.description) {
-            CHAR_TYPED.description -> handleWhenCharTyped(editor, psiElement, isLineEnd)
-            MOUSE_CLICKED.description -> handleWhenMouseClicked(caretPositionChange, editor, psiElement, isLineEnd)
-            ARROW_KEYS_PRESSED.description -> handleWhenArrowKeysPressed(caretPositionChange, editor, psiElement, isLineEnd)
-            PSI_FILE_CHANGED.description -> handleWhenPsiFileChanged(editor, psiElement, isLineEnd)
-            AN_ACTION_HAPPENED.description -> handleWhenAnActionHappened(editor, psiElement, isLineEnd)
+            CHAR_TYPED.description -> handleWhenCharTyped(handleStrategy, editor, psiElement, isLineEnd)
+            MOUSE_CLICKED.description -> handleWhenMouseClicked(handleStrategy, editor, psiElement, isLineEnd)
+            ARROW_KEYS_PRESSED.description -> handleWhenArrowKeysPressed(handleStrategy, editor, psiElement, isLineEnd)
+            AN_ACTION_HAPPENED.description -> handleWhenAnActionHappened(handleStrategy, editor, psiElement, isLineEnd)
             else -> {
                 throw Error(Constants.UNREACHABLE_CODE + "in SingleLanguageSwitchIMEHandler.handle method")
             }
         }
     }
 
-    override fun shouldHandleWhenCharTyped(c: Char): Boolean {
-        return false
+    // 此处默认单纯的不感兴趣的字符输入不会离开或更改当前的 PsiElementLocation（注释区和代码区）
+    // 只有选中内容后进行输入时才可能离开或更改当前的 PsiElementLocation，此时需要更新 PsiElementLocation
+    // 后续如果有其他情况可以增加判断
+    // 如果情况很复杂，可以干脆对不感兴趣的字符输入默认就是 UPDATE_LOCATION 策略
+    override fun getHandleStrategyWhenCharTyped(c: Char, editor: Editor): HandleStrategy {
+        return  if (editor.selectionModel.hasSelection()) {
+                    if (isInterestChar(c)) {
+                        HandleStrategy.UPDATE_LOCATION_AND_SWITCH
+                    } else {
+                        HandleStrategy.UPDATE_LOCATION
+                    }
+                } else if (isInterestChar(c)) {
+                    HandleStrategy.UPDATE_LOCATION_AND_SWITCH
+                } else {
+                    HandleStrategy.DO_NOT_HANDLE
+                }
     }
 
-    override fun handleWhenCharTyped(editor: Editor, psiElement: PsiElement, isLineEnd: Boolean) {
-        switch(editor, psiElement, isLineEnd)
-    }
-
-    override fun handleWhenMouseClicked(caretPositionChange: Int, editor: Editor, psiElement: PsiElement, isLineEnd: Boolean) {
-        switch(editor, psiElement, isLineEnd)
-    }
-
-    override fun handleWhenArrowKeysPressed(caretPositionChange: Int, editor: Editor, psiElement: PsiElement, isLineEnd: Boolean) {
-        switch(editor, psiElement, isLineEnd)
-    }
-
-    override fun handleWhenPsiFileChanged(editor: Editor, psiElement: PsiElement, isLineEnd: Boolean) {
-        switch(editor, psiElement, isLineEnd)
-    }
-
-    override fun handleWhenAnActionHappened(editor: Editor, psiElement: PsiElement, isLineEnd: Boolean) {
-        switch(editor, psiElement, isLineEnd)
-    }
-
-    override fun switch(editor: Editor, curPsiElement: PsiElement, isLineEnd : Boolean) {
+    override fun updatePsiElementLocation(editor: Editor, curPsiElement: PsiElement, isLineEnd: Boolean) {
         val psiElementLocation = psiElementLocationMap[editor]!!
-        val curPsiElementLocation = AreaDeciderDelegate.getPsiElementLocation(getLanguage(), curPsiElement, isLineEnd)
+        val curPsiElementLocation = AreaDeciderDelegate.getPsiElementLocation(getLanguage(), curPsiElement, curPsiElement.textOffset == editor.caretModel.offset, isLineEnd)
+        psiElementLocation.copyFrom(curPsiElementLocation)
+    }
+
+    override fun updatePsiElementLocationAndSwitch(editor: Editor, curPsiElement: PsiElement, isLineEnd : Boolean) {
+        val psiElementLocation = psiElementLocationMap[editor]!!
+        val curPsiElementLocation = AreaDeciderDelegate.getPsiElementLocation(getLanguage(), curPsiElement, curPsiElement.textOffset == editor.caretModel.offset, isLineEnd)
         // 初始状态，直接返回
         if (curPsiElementLocation.isInitState()) return
         // 位于其他区域
