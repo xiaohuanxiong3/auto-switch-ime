@@ -106,8 +106,31 @@ object AutoSwitchIMEService {
                             return@performForCommittedDocument
                         }
                         val isLineEnd = isLineEnd(editor.caretModel.offset, psiElement)
-                        SingleLanguageSwitchIMEDelegate.handle(language, IMESwitchTrigger.CHAR_TYPED, handleStrategy, editor, psiElement, isLineEnd)
+                        SingleLanguageSwitchIMEDelegate.handle(language, IMESwitchTrigger.CHAR_TYPE, handleStrategy, editor, psiElement, isLineEnd)
                     }
+                }
+            }
+        }
+    }
+
+    fun handleWhenSelectionUnSelected(editor: Editor) {
+        checkAndHandleCache(editor)
+        editorPsiFileMap[editor]?.let { psiFile ->
+            val documentManager = PsiDocumentManager.getInstance(psiFile.project)
+            editor.document.let { document ->
+                documentManager.performForCommittedDocument(document) {
+                    val language = psiFile.language
+                    if (!PsiFileLanguage.isLanguageAutoSwitchEnabled(language)) {
+                        return@performForCommittedDocument
+                    }
+                    val psiElement = psiFile.findElementAt(editor.caretModel.offset)
+                    // 如果 psiElement为null
+                    if (psiElement == null) {
+                        handleWhenNullPsiElement(editor,language)
+                        return@performForCommittedDocument
+                    }
+                    val isLineEnd = isLineEnd(editor.caretModel.offset, psiElement)
+                    SingleLanguageSwitchIMEDelegate.handle(language, IMESwitchTrigger.CHAR_TYPE, HandleStrategy.UPDATE_LOCATION, editor, psiElement, isLineEnd)
                 }
             }
         }

@@ -46,7 +46,7 @@ class DocumentChangedAnActionListener : AnActionListener {
 //                return
 //            }
 //            dataContext.getData(CommonDataKeys.EDITOR)?.let { editor ->
-//                AutoSwitchIMEService.handleWhenCharTyped(c, psiFile, editor)
+//                AutoSwitchIMEService.handleWhenCharType(c, psiFile, editor)
 //            }
 //        }
 //    }

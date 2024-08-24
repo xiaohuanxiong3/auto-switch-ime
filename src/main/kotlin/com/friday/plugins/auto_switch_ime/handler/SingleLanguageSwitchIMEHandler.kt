@@ -5,7 +5,7 @@ import com.intellij.lang.Language
 /**
  * 单语言输入法自动切换处理器
  */
-interface SingleLanguageSwitchIMEHandler : CharTypedSwitchIMEHandler, MouseClickedSwitchIMEHandler, ArrowKeysPressedSwitchIMEHandler, ActionHappenedSwitchIMEHandler{
+interface SingleLanguageSwitchIMEHandler : CharTypeSwitchIMEHandler, MouseClickedSwitchIMEHandler, ArrowKeysPressedSwitchIMEHandler, ActionHappenedSwitchIMEHandler{
 
     fun getLanguage() : Language
 

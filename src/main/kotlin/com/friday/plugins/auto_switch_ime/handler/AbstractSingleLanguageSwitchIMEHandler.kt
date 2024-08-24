@@ -24,7 +24,7 @@ abstract class AbstractSingleLanguageSwitchIMEHandler : SingleLanguageSwitchIMEH
         isLineEnd: Boolean
     ) {
         when (trigger.description) {
-            CHAR_TYPED.description -> handleWhenCharTyped(handleStrategy, editor, psiElement, isLineEnd)
+            CHAR_TYPE.description -> handleWhenCharType(handleStrategy, editor, psiElement, isLineEnd)
             MOUSE_CLICKED.description -> handleWhenMouseClicked(handleStrategy, editor, psiElement, isLineEnd)
             ARROW_KEYS_PRESSED.description -> handleWhenArrowKeysPressed(handleStrategy, editor, psiElement, isLineEnd)
             AN_ACTION_HAPPENED.description -> handleWhenAnActionHappened(handleStrategy, editor, psiElement, isLineEnd)
@@ -54,13 +54,13 @@ abstract class AbstractSingleLanguageSwitchIMEHandler : SingleLanguageSwitchIMEH
 
     override fun updatePsiElementLocation(editor: Editor, curPsiElement: PsiElement, isLineEnd: Boolean) {
         val psiElementLocation = psiElementLocationMap[editor]!!
-        val curPsiElementLocation = AreaDeciderDelegate.getPsiElementLocation(getLanguage(), curPsiElement, curPsiElement.textOffset == editor.caretModel.offset, isLineEnd)
+        val curPsiElementLocation = AreaDeciderDelegate.getPsiElementLocation(getLanguage(), curPsiElement, editor.caretModel.offset, isLineEnd)
         psiElementLocation.copyFrom(curPsiElementLocation)
     }
 
     override fun updatePsiElementLocationAndSwitch(editor: Editor, curPsiElement: PsiElement, isLineEnd : Boolean) {
         val psiElementLocation = psiElementLocationMap[editor]!!
-        val curPsiElementLocation = AreaDeciderDelegate.getPsiElementLocation(getLanguage(), curPsiElement, curPsiElement.textOffset == editor.caretModel.offset, isLineEnd)
+        val curPsiElementLocation = AreaDeciderDelegate.getPsiElementLocation(getLanguage(), curPsiElement, editor.caretModel.offset, isLineEnd)
         // 初始状态，直接返回
         if (curPsiElementLocation.isInitState()) return
         // 位于其他区域

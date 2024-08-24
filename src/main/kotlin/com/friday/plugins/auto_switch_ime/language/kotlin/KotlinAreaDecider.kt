@@ -13,10 +13,10 @@ import org.jetbrains.kotlin.psi.KtStringTemplateExpression
 object KotlinAreaDecider : AreaDecider {
     private const val LINE_COMMENT_NAME = "PsiComment(EOL_COMMENT)"
 
-    override fun getPsiElementLocation(psiElement: PsiElement, isElementStart: Boolean, isLineEnd: Boolean): PsiElementLocation {
+    override fun getPsiElementLocation(psiElement: PsiElement, editorOffset: Int, isLineEnd: Boolean): PsiElementLocation {
         val psiElementLocation = PsiElementLocation()
         // 单行注释区
-        if (psiElement.toString() == LINE_COMMENT_NAME && !isElementStart) {
+        if (psiElement.toString() == LINE_COMMENT_NAME && editorOffset != psiElement.textOffset ) {
             psiElementLocation.setLocationId(psiElement.prevSibling,psiElement.nextSibling)
             psiElementLocation.isSecondLanguageEnabled = true
             psiElementLocation.doSwitchWhenFirstInThisLocation = true
@@ -33,7 +33,7 @@ object KotlinAreaDecider : AreaDecider {
         }
         // 文档注释区
         val psiDocComment = PsiTreeUtil.getParentOfType(psiElement, PsiDocCommentBase::class.java)
-        if (psiDocComment != null && !isElementStart) {
+        if (psiDocComment != null && editorOffset != psiDocComment.textOffset) {
             psiElementLocation.setLocationId(psiDocComment)
             psiElementLocation.isSecondLanguageEnabled = true
             psiElementLocation.doSwitchWhenFirstInThisLocation = true
@@ -41,7 +41,7 @@ object KotlinAreaDecider : AreaDecider {
             return psiElementLocation
         }
         // 字符串模板区域中的字符串字面量区域
-        var ktLiteralStringTemplateEntry : KtLiteralStringTemplateEntry?
+        val ktLiteralStringTemplateEntry : KtLiteralStringTemplateEntry?
         if (psiElement.toString() == "PsiElement(CLOSING_QUOTE)" && psiElement.text == "\"") {
             ktLiteralStringTemplateEntry = getParentOfType(psiElement.prevSibling, KtLiteralStringTemplateEntry::class.java)
         } else {

@@ -1,5 +1,6 @@
 package com.friday.plugins.auto_switch_ime
 
+import com.friday.plugins.auto_switch_ime.service.AutoSwitchIMEService
 import com.friday.plugins.auto_switch_ime.trigger.MouseClickedHandler
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.event.*
@@ -7,6 +8,8 @@ import com.intellij.openapi.editor.ex.FocusChangeListener
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiFile
+import java.awt.event.InputMethodEvent
+import java.awt.event.InputMethodListener
 import java.util.concurrent.ConcurrentHashMap
 
 class CustomEditorFactoryListener : EditorFactoryListener {
@@ -43,11 +46,13 @@ class CustomEditorFactoryListener : EditorFactoryListener {
             event.editor.let {
                 it as? EditorImpl
             }?.addFocusListener(FocusLostListener())
+            // 添加自定义的 InputMethodListener（处理中文输入未确认时不会触发CharTyped事件问题）
+            event.editor.contentComponent.addInputMethodListener(MyInputMethodListener(event.editor))
         }
     }
 
     override fun editorReleased(event: EditorFactoryEvent) {
-        val caretListener = caretListenerMap[event.editor]
+        caretListenerMap[event.editor]
         // 删除 CaretListener 缓存
         caretListenerMap.remove(event.editor)
         // 删除 PsiFile -> Editor 缓存
@@ -88,6 +93,24 @@ class CustomEditorFactoryListener : EditorFactoryListener {
 
         override fun caretPositionChanged(event: CaretEvent) {
             caretPositionChange++
+        }
+
+    }
+
+    class MyInputMethodListener(val editor: Editor) : InputMethodListener {
+
+        // 假设 event.committedCharacterCount == 0 且 event.text != null 时，会取消选择已选择文本
+        // 你要问我为什么这么喜欢假设，问就是不会
+        override fun inputMethodTextChanged(event: InputMethodEvent?) {
+            event?.let {
+                if (event.committedCharacterCount == 0 && event.text != null && editor.selectionModel.hasSelection()) {
+                    AutoSwitchIMEService.handleWhenSelectionUnSelected(editor)
+                }
+            }
+        }
+
+        override fun caretPositionChanged(event: InputMethodEvent?) {
+
         }
 
     }

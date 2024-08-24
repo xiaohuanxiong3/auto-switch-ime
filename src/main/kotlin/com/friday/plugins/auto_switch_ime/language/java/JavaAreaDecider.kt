@@ -12,10 +12,10 @@ import com.intellij.psi.javadoc.PsiDocComment
 
 object JavaAreaDecider : AreaDecider {
 
-    override fun getPsiElementLocation(psiElement: PsiElement, isElementStart: Boolean, isLineEnd: Boolean): PsiElementLocation {
+    override fun getPsiElementLocation(psiElement: PsiElement, editorOffset: Int, isLineEnd: Boolean): PsiElementLocation {
         val psiElementLocation = PsiElementLocation()
         // 单行注释区
-        if (psiElement.toString() == "PsiComment(END_OF_LINE_COMMENT)" && !isElementStart) {
+        if (psiElement.toString() == "PsiComment(END_OF_LINE_COMMENT)" && editorOffset != psiElement.textOffset) {
             psiElementLocation.setLocationId(psiElement.prevSibling,psiElement.nextSibling)
             psiElementLocation.isSecondLanguageEnabled = true
             psiElementLocation.doSwitchWhenFirstInThisLocation = true
@@ -32,20 +32,20 @@ object JavaAreaDecider : AreaDecider {
         }
         // 文档注释区
         if (psiElement.parent != null) {
-            if (psiElement.parent is PsiDocComment && !isElementStart) {
+            if (psiElement.parent is PsiDocComment && editorOffset != psiElement.parent.textOffset) {
                 psiElementLocation.setLocationId(psiElement.parent)
                 psiElementLocation.isSecondLanguageEnabled = true
                 psiElementLocation.doSwitchWhenFirstInThisLocation = true
                 psiElementLocation.switchToSecondLanguageWhenFirstInThisLocation = true
                 return psiElementLocation
             } else if (psiElement.parent.parent != null) {
-                if (psiElement.parent.parent is PsiDocComment && !isElementStart) {
+                if (psiElement.parent.parent is PsiDocComment && editorOffset != psiElement.parent.parent.textOffset) {
                     psiElementLocation.setLocationId(psiElement.parent.parent)
                     psiElementLocation.isSecondLanguageEnabled = true
                     psiElementLocation.doSwitchWhenFirstInThisLocation = true
                     psiElementLocation.switchToSecondLanguageWhenFirstInThisLocation = true
                     return psiElementLocation
-                } else if (psiElement.parent.parent.parent != null && psiElement.parent.parent.parent is PsiDocComment && !isElementStart) {
+                } else if (psiElement.parent.parent.parent != null && psiElement.parent.parent.parent is PsiDocComment && editorOffset != psiElement.parent.parent.parent.textOffset) {
                     psiElementLocation.setLocationId(psiElement.parent.parent.parent)
                     psiElementLocation.isSecondLanguageEnabled = true
                     psiElementLocation.doSwitchWhenFirstInThisLocation = true
