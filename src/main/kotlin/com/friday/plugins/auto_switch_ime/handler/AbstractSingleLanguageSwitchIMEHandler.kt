@@ -2,13 +2,15 @@ package com.friday.plugins.auto_switch_ime.handler
 
 import com.friday.plugins.auto_switch_ime.Constants
 import com.friday.plugins.auto_switch_ime.MyMap
-import com.friday.plugins.auto_switch_ime.PsiElementLocation
 import com.friday.plugins.auto_switch_ime.areaDecide.AreaDeciderDelegate
+import com.friday.plugins.auto_switch_ime.areaDecide.PsiElementLocation
 import com.friday.plugins.auto_switch_ime.support.IMESwitchSupport
 import com.friday.plugins.auto_switch_ime.trigger.IMESwitchTrigger
 import com.friday.plugins.auto_switch_ime.trigger.IMESwitchTrigger.*
 import com.friday.plugins.auto_switch_ime.util.ApplicationUtil
+import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.editor.Editor
+import com.intellij.openapi.editor.actions.BackspaceAction
 import com.intellij.psi.PsiElement
 import java.util.concurrent.ConcurrentHashMap
 
@@ -52,21 +54,43 @@ abstract class AbstractSingleLanguageSwitchIMEHandler : SingleLanguageSwitchIMEH
                 }
     }
 
+    private fun isDoNotForceSwitchAction(action: AnAction) : Boolean {
+        return action is BackspaceAction
+    }
+
+    override fun getHandleStrategyWhenAnActionHappened(action: AnAction, documentChange: Int, caretChange: Int): HandleStrategy {
+        if (documentChange > 0) {
+            return  if (isDoNotForceSwitchAction(action)) {
+                        HandleStrategy.UPDATE_LOCATION_AND_SWITCH
+                    } else {
+                        HandleStrategy.UPDATE_LOCATION_AND_FORCE_SWITCH
+                    }
+        } else if (caretChange > 0) {
+            return HandleStrategy.UPDATE_LOCATION_AND_SWITCH
+        } else {
+            return HandleStrategy.DO_NOT_HANDLE
+        }
+    }
+
     override fun updatePsiElementLocation(editor: Editor, curPsiElement: PsiElement, isLineEnd: Boolean) {
         val psiElementLocation = psiElementLocationMap[editor]!!
         val curPsiElementLocation = AreaDeciderDelegate.getPsiElementLocation(getLanguage(), curPsiElement, editor.caretModel.offset, isLineEnd)
         psiElementLocation.copyFrom(curPsiElementLocation)
     }
 
-    override fun updatePsiElementLocationAndSwitch(editor: Editor, curPsiElement: PsiElement, isLineEnd : Boolean) {
+    override fun updatePsiElementLocationAndSwitch(editor: Editor, curPsiElement: PsiElement, isLineEnd : Boolean, forceSwitch : Boolean) {
         val psiElementLocation = psiElementLocationMap[editor]!!
         val curPsiElementLocation = AreaDeciderDelegate.getPsiElementLocation(getLanguage(), curPsiElement, editor.caretModel.offset, isLineEnd)
         // 初始状态，直接返回
         if (curPsiElementLocation.isInitState()) return
         // 位于其他区域
         if (curPsiElementLocation.isInOtherLocation()) {
-            doSwitchInOtherLocation()
-            psiElementLocation.copyFrom(curPsiElementLocation)
+            if (forceSwitch || !psiElementLocation.isInOtherLocation()) {
+                doSwitchWhenInOtherLocation()
+            }
+            if (!psiElementLocation.isInOtherLocation()) {
+                psiElementLocation.copyFrom(curPsiElementLocation)
+            }
         } else {
             // 判断当前location是否和上一location相同。
             // 如果相同，则不进行任何操作，由用户自己操作
@@ -93,7 +117,7 @@ abstract class AbstractSingleLanguageSwitchIMEHandler : SingleLanguageSwitchIMEH
         }
     }
 
-    private fun doSwitchInOtherLocation() {
+    private fun doSwitchWhenInOtherLocation() {
         ApplicationUtil.executeOnPooledThread {
             IMESwitchSupport.switchToEn(++IMESwitchSupport.seq)
         }

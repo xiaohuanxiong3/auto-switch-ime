@@ -1,5 +1,6 @@
 package com.friday.plugins.auto_switch_ime
 
+import com.friday.plugins.auto_switch_ime.areaDecide.PsiElementLocation
 import com.friday.plugins.auto_switch_ime.service.AutoSwitchIMEService
 import com.friday.plugins.auto_switch_ime.trigger.MouseClickedHandler
 import com.intellij.openapi.editor.Editor

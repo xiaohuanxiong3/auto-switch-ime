@@ -16,7 +16,8 @@ interface SwitchIMEHandler {
     fun doHandle(handleStrategy: HandleStrategy, editor: Editor, psiElement: PsiElement, isLineEnd: Boolean) {
         when (handleStrategy) {
             HandleStrategy.UPDATE_LOCATION -> updatePsiElementLocation(editor, psiElement, isLineEnd)
-            HandleStrategy.UPDATE_LOCATION_AND_SWITCH -> updatePsiElementLocationAndSwitch(editor, psiElement, isLineEnd)
+            HandleStrategy.UPDATE_LOCATION_AND_SWITCH -> updatePsiElementLocationAndSwitch(editor, psiElement, isLineEnd, false)
+            HandleStrategy.UPDATE_LOCATION_AND_FORCE_SWITCH -> updatePsiElementLocationAndSwitch(editor, psiElement, isLineEnd, true)
             else -> {
                 throw Error(Constants.UNREACHABLE_CODE + "in SwitchIMEHandler.doHandle method")
             }
@@ -25,6 +26,6 @@ interface SwitchIMEHandler {
 
     fun updatePsiElementLocation(editor: Editor, curPsiElement: PsiElement, isLineEnd : Boolean)
 
-    fun updatePsiElementLocationAndSwitch(editor: Editor, curPsiElement: PsiElement, isLineEnd : Boolean)
+    fun updatePsiElementLocationAndSwitch(editor: Editor, curPsiElement: PsiElement, isLineEnd : Boolean, forceSwitch : Boolean)
 
 }

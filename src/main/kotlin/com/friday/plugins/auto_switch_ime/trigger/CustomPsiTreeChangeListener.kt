@@ -1,6 +1,6 @@
 package com.friday.plugins.auto_switch_ime.trigger
 
-import com.friday.plugins.auto_switch_ime.PsiFileLanguage
+import com.friday.plugins.auto_switch_ime.language.PsiFileLanguage
 import com.friday.plugins.auto_switch_ime.service.AutoSwitchIMEService
 import com.intellij.psi.PsiTreeChangeAdapter
 import com.intellij.psi.PsiTreeChangeEvent

@@ -1,5 +1,6 @@
 package com.friday.plugins.auto_switch_ime
 
+import com.friday.plugins.auto_switch_ime.areaDecide.PsiElementLocation
 import com.intellij.openapi.editor.Editor
 import com.intellij.psi.PsiFile
 import java.util.concurrent.ConcurrentHashMap

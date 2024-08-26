@@ -1,6 +1,5 @@
 package com.friday.plugins.auto_switch_ime.areaDecide
 
-import com.friday.plugins.auto_switch_ime.PsiElementLocation
 import com.intellij.lang.Language
 import com.intellij.psi.PsiElement
 

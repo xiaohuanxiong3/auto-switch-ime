@@ -1,7 +1,7 @@
 package com.friday.plugins.auto_switch_ime.language.java
 
-import com.friday.plugins.auto_switch_ime.PsiElementLocation
 import com.friday.plugins.auto_switch_ime.areaDecide.AreaDecider
+import com.friday.plugins.auto_switch_ime.areaDecide.PsiElementLocation
 import com.intellij.lang.Language
 import com.intellij.lang.java.JavaLanguage
 import com.intellij.psi.PsiElement
@@ -62,7 +62,7 @@ object JavaAreaDecider : AreaDecider {
                 if (ElementType.STRING_LITERALS.contains(it.literalElementType)) {
                     psiElementLocation.setLocationId(psiElement.parent)
                     psiElementLocation.isSecondLanguageEnabled = true
-                    psiElementLocation.doSwitchWhenFirstInThisLocation = true
+                    psiElementLocation.doSwitchWhenFirstInThisLocation = false
                     psiElementLocation.switchToSecondLanguageWhenFirstInThisLocation = false
                     return psiElementLocation
                 }

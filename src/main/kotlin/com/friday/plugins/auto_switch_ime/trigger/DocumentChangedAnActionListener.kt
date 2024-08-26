@@ -1,5 +1,6 @@
 package com.friday.plugins.auto_switch_ime
 
+import com.friday.plugins.auto_switch_ime.language.PsiFileLanguage
 import com.friday.plugins.auto_switch_ime.service.AutoSwitchIMEService
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.actionSystem.ex.AnActionListener
@@ -9,6 +10,7 @@ import java.util.concurrent.ConcurrentHashMap
 class DocumentChangedAnActionListener : AnActionListener {
 
     private val documentListenerMap : ConcurrentHashMap<Editor, CustomEditorFactoryListener.DocumentChangeCountListener> = MyMap.documentListenerMap
+    private val caretListenerMap : ConcurrentHashMap<Editor, CustomEditorFactoryListener.SwitchIMECaretListener> = MyMap.caretListenerMap
 
 //    private val log : Logger = LoggerFactory.getLogger(DocumentChangedAnActionListener::class.java)
 
@@ -16,14 +18,21 @@ class DocumentChangedAnActionListener : AnActionListener {
     override fun beforeActionPerformed(action: AnAction, event: AnActionEvent) {
         event.getData(CommonDataKeys.EDITOR)?.let { editor ->
             documentListenerMap[editor]?.numberOfChanges = 0
+            caretListenerMap[editor]?.caretPositionChange = 0
         }
     }
 
     override fun afterActionPerformed(action: AnAction, event: AnActionEvent, result: AnActionResult) {
         event.getData(CommonDataKeys.EDITOR)?.let { editor ->
-            documentListenerMap[editor]?.let { documentListener ->
-                if (documentListener.numberOfChanges <= 0) return
-                AutoSwitchIMEService.handleWhenAnActionHappened(editor)
+            event.getData(CommonDataKeys.PSI_FILE)?.let { psiFile ->
+                if (!PsiFileLanguage.isLanguageAutoSwitchEnabled(psiFile.language)) {
+                    return
+                }
+                documentListenerMap[editor]?.let { documentListener ->
+                    caretListenerMap[editor]?.let { caretListener ->
+                        AutoSwitchIMEService.handleWhenAnActionHappened(editor, psiFile.language, action, documentListener.numberOfChanges, caretListener.caretPositionChange)
+                    }
+                }
             }
         }
     }

@@ -1,6 +1,6 @@
 package com.friday.plugins.auto_switch_ime.language.kotlin
 
-import com.friday.plugins.auto_switch_ime.PsiElementLocation
+import com.friday.plugins.auto_switch_ime.areaDecide.PsiElementLocation
 import com.friday.plugins.auto_switch_ime.areaDecide.AreaDecider
 import com.intellij.lang.Language
 import com.intellij.psi.PsiDocCommentBase

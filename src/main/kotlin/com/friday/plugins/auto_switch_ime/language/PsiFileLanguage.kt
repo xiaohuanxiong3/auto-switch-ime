@@ -1,4 +1,4 @@
-package com.friday.plugins.auto_switch_ime
+package com.friday.plugins.auto_switch_ime.language
 
 import com.friday.plugins.auto_switch_ime.areaDecide.AreaDecider
 import com.friday.plugins.auto_switch_ime.language.java.JavaAreaDecider
