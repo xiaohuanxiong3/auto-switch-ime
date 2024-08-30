@@ -55,6 +55,7 @@
     <projectListeners>
         <listener class="com.friday.plugins.auto_switch_ime.DocumentChangedAnActionListener" topic="com.intellij.openapi.actionSystem.ex.AnActionListener" />
         <listener class="com.friday.plugins.auto_switch_ime.listener.CursorFirstInSomeWindowActionListener" topic="com.intellij.openapi.actionSystem.ex.AnActionListener" />
+<!--        <listener class="com.friday.plugins.auto_switch_ime.listener.MyLookupListener" topic="com.intellij.codeInsight.lookup.LookupListener" />-->
     </projectListeners>
 
 </idea-plugin>
