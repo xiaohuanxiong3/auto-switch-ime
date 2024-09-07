@@ -93,12 +93,12 @@ class AutoSwitchIMEStatusBarIconWidget(project: Project) : EditorBasedWidget(pro
                     getFocusedEditor()?.let {  editor ->
                         when (currentStatus) {
                             ENABLE -> {
-                                setStatus(DISABLE)
                                 PsiFileLanguage.toggleIMESwitchSetting(EditorUtil.getLanguage(editor))
+                                setStatus(DISABLE)
                             }
                             DISABLE -> {
-                                setStatus(ENABLE)
                                 PsiFileLanguage.toggleIMESwitchSetting(EditorUtil.getLanguage(editor))
+                                setStatus(ENABLE)
                             }
                             DEACTIVATE -> {
 
