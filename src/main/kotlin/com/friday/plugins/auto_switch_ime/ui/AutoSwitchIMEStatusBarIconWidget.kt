@@ -56,8 +56,8 @@ class AutoSwitchIMEStatusBarIconWidget(project: Project) : EditorBasedWidget(pro
                     if (myStatusBar != null) {
                         // 关闭所有tab页
                         if (event.newEditor == null) {
-                            currentStatus = null
                             setStatus(null)
+                            currentStatus = null
                             return
                         }
                         event.newEditor?.let {
