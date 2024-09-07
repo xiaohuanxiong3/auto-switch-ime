@@ -11,9 +11,9 @@ import com.intellij.util.xmlb.XmlSerializerUtil
 @State(name = "SwitchIME.Settings", storages = [Storage("ime_switch_settings.xml")])
 class SwitchIMESettings : PersistentStateComponent<SwitchIMESettings> {
 
-    var isJavaEnabled: Boolean = false
+    var isJavaEnabled: Boolean = true
 
-    var isKotlinEnabled: Boolean = false
+    var isKotlinEnabled: Boolean = true
 
     var switchToEnWhenCursorFirstInSomeWindow: Boolean = true
 
@@ -22,7 +22,7 @@ class SwitchIMESettings : PersistentStateComponent<SwitchIMESettings> {
     }
 
     override fun loadState(state: SwitchIMESettings) {
-        XmlSerializerUtil.copyBean(state, this);
+        XmlSerializerUtil.copyBean(state, this)
     }
 
     companion object {

@@ -1,14 +1,17 @@
 package com.friday.plugins.auto_switch_ime.language
 
 import com.friday.plugins.auto_switch_ime.areaDecide.AreaDecider
-import com.friday.plugins.auto_switch_ime.language.java.JavaAreaDecider
-import com.friday.plugins.auto_switch_ime.language.kotlin.KotlinAreaDecider
-import com.friday.plugins.auto_switch_ime.language.java.JavaLanguageSwitchIMEHandler
-import com.friday.plugins.auto_switch_ime.language.kotlin.KotlinLanguageSwitchIMEHandler
 import com.friday.plugins.auto_switch_ime.handler.SingleLanguageSwitchIMEHandler
+import com.friday.plugins.auto_switch_ime.language.java.JavaAreaDecider
+import com.friday.plugins.auto_switch_ime.language.java.JavaLanguageSwitchIMEHandler
+import com.friday.plugins.auto_switch_ime.language.kotlin.KotlinAreaDecider
+import com.friday.plugins.auto_switch_ime.language.kotlin.KotlinLanguageSwitchIMEHandler
 import com.friday.plugins.auto_switch_ime.setting.SwitchIMESettings
+import com.friday.plugins.auto_switch_ime.ui.AutoSwitchIMEStatusBarIconWidget
+import com.friday.plugins.auto_switch_ime.util.EditorUtil
 import com.intellij.lang.Language
 import com.intellij.lang.java.JavaLanguage
+import com.intellij.openapi.editor.Editor
 import org.jetbrains.kotlin.idea.KotlinLanguage
 
 enum class PsiFileLanguage(
@@ -52,5 +55,26 @@ enum class PsiFileLanguage(
                 else -> false
             }
         }
+
+        fun getLanguageAutoSwitchStatus(language: Language?) : AutoSwitchIMEStatusBarIconWidget.IconStatus {
+            return when(language) {
+                JavaLanguage.INSTANCE -> if (SwitchIMESettings.instance.isJavaEnabled) AutoSwitchIMEStatusBarIconWidget.IconStatus.ENABLE else AutoSwitchIMEStatusBarIconWidget.IconStatus.DISABLE
+                KotlinLanguage.INSTANCE -> if (SwitchIMESettings.instance.isKotlinEnabled) AutoSwitchIMEStatusBarIconWidget.IconStatus.ENABLE else AutoSwitchIMEStatusBarIconWidget.IconStatus.DISABLE
+                else -> AutoSwitchIMEStatusBarIconWidget.IconStatus.DEACTIVATE
+            }
+        }
+
+        fun toggleIMESwitchSetting(language: Language?) {
+            when (language) {
+                JavaLanguage.INSTANCE -> SwitchIMESettings.instance.isJavaEnabled = !SwitchIMESettings.instance.isJavaEnabled
+                KotlinLanguage.INSTANCE -> SwitchIMESettings.instance.isKotlinEnabled = !SwitchIMESettings.instance.isKotlinEnabled
+                else -> {}
+            }
+        }
+
+        fun getEditorStatusBarWidgetStatus(editor: Editor) : AutoSwitchIMEStatusBarIconWidget.IconStatus? {
+            return getLanguageAutoSwitchStatus(EditorUtil.getLanguage(editor))
+        }
+
     }
 }

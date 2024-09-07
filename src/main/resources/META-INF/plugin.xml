@@ -41,6 +41,7 @@
         <notificationGroup displayType="BALLOON"
                            id="auto-switch-ime-plugin"
                            isLogByDefault="false"/>
+        <statusBarWidgetFactory implementation="com.friday.plugins.auto_switch_ime.ui.MyStatusBarWidgetFactory" id="auto-switch-ime-widget-factory"/>
         <!-- 自动切换输入法-->
     </extensions>
 

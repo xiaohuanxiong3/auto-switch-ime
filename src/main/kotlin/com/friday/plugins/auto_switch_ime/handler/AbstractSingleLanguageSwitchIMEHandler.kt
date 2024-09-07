@@ -11,6 +11,7 @@ import com.friday.plugins.auto_switch_ime.util.ApplicationUtil
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.actions.BackspaceAction
+import com.intellij.openapi.editor.actions.EnterAction
 import com.intellij.psi.PsiElement
 import java.util.concurrent.ConcurrentHashMap
 
@@ -58,12 +59,16 @@ abstract class AbstractSingleLanguageSwitchIMEHandler : SingleLanguageSwitchIMEH
         return action is BackspaceAction
     }
 
+    private fun isForceSwitchAction(action: AnAction) : Boolean {
+        return action is EnterAction
+    }
+
     override fun getHandleStrategyWhenAnActionHappened(action: AnAction, documentChange: Int, caretChange: Int): HandleStrategy {
         if (documentChange > 0) {
-            return  if (isDoNotForceSwitchAction(action)) {
-                        HandleStrategy.UPDATE_LOCATION_AND_SWITCH
-                    } else {
+            return  if (isForceSwitchAction(action)) {
                         HandleStrategy.UPDATE_LOCATION_AND_FORCE_SWITCH
+                    } else {
+                        HandleStrategy.UPDATE_LOCATION_AND_SWITCH
                     }
         } else if (caretChange > 0) {
             return HandleStrategy.UPDATE_LOCATION_AND_SWITCH

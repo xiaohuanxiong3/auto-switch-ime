@@ -46,7 +46,7 @@ class CustomEditorFactoryListener : EditorFactoryListener {
             // 添加自定义的 FocusChangeListener（删除如上）
             event.editor.let {
                 it as? EditorImpl
-            }?.addFocusListener(FocusLostListener())
+            }?.addFocusListener(FocusListener())
             // 添加自定义的 InputMethodListener（处理中文输入未确认时不会触发CharTyped事件问题）
             event.editor.contentComponent.addInputMethodListener(MyInputMethodListener(event.editor))
         }
@@ -80,7 +80,7 @@ class CustomEditorFactoryListener : EditorFactoryListener {
         }
     }
 
-    class FocusLostListener : FocusChangeListener {
+    class FocusListener : FocusChangeListener {
 
         override fun focusLost(editor: Editor) {
             // 编辑器失去焦点时重置PsiElementLocation

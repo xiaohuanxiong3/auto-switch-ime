@@ -13,4 +13,6 @@ object Constants {
     const val CODE_LOCATION_ID = "code"
 
     const val SINGLE_LINE_COMMENT_BETWEEN = "SLCB"
+
+    const val STATUS_BAR_WIDGET_ID = "auto-switch-ime"
 }

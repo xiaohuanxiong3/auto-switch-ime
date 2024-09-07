@@ -1,6 +1,11 @@
 package com.friday.plugins.auto_switch_ime.setting
 
+import com.friday.plugins.auto_switch_ime.Constants
+import com.friday.plugins.auto_switch_ime.ui.AutoSwitchIMEStatusBarIconWidget
 import com.intellij.openapi.options.ConfigurableWithId
+import com.intellij.openapi.project.ProjectManager
+import com.intellij.openapi.wm.WindowManager
+import com.intellij.util.containers.stream
 import javax.swing.JComponent
 
 class SwitchIMEConfigurable : ConfigurableWithId {
@@ -26,6 +31,11 @@ class SwitchIMEConfigurable : ConfigurableWithId {
         settings.isJavaEnabled = component.getJavaCheckBox().isSelected
         settings.isKotlinEnabled = component.getKotlinCheckBox().isSelected
         settings.switchToEnWhenCursorFirstInSomeWindow = component.getSwitchToEnWhenCursorFirstInSomeWindow().isSelected
+        ProjectManager.getInstance().openProjects.stream().forEach { project ->
+            WindowManager.getInstance().getStatusBar(project).getWidget(Constants.STATUS_BAR_WIDGET_ID)?.let {
+                it as? AutoSwitchIMEStatusBarIconWidget
+            }?.forceUpdateWidget()
+        }
     }
 
     override fun getDisplayName(): String {

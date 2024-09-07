@@ -17,6 +17,7 @@ class SwitchAutoSwitchEnableAction : AnAction() {
             when (language) {
                 JavaLanguage.INSTANCE -> {
                     SwitchIMESettings.instance.isJavaEnabled = !SwitchIMESettings.instance.isJavaEnabled
+                    EditorUtil.updateStatusBarWidgetStatus(editor, language)
                     if (SwitchIMESettings.instance.isJavaEnabled) {
                         NotificationUtil.info("Java-开启输入法自动切换")
                     } else {
@@ -25,6 +26,7 @@ class SwitchAutoSwitchEnableAction : AnAction() {
                 }
                 KotlinLanguage.INSTANCE -> {
                     SwitchIMESettings.instance.isKotlinEnabled = !SwitchIMESettings.instance.isKotlinEnabled
+                    EditorUtil.updateStatusBarWidgetStatus(editor, language)
                     if (SwitchIMESettings.instance.isKotlinEnabled) {
                         NotificationUtil.info("Kotlin-开启输入法自动切换")
                     } else {
