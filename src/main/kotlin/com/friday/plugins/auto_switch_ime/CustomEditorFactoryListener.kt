@@ -1,6 +1,5 @@
 package com.friday.plugins.auto_switch_ime
 
-import com.friday.plugins.auto_switch_ime.areaDecide.PsiElementLocation
 import com.friday.plugins.auto_switch_ime.service.AutoSwitchIMEService
 import com.friday.plugins.auto_switch_ime.trigger.MouseClickedHandler
 import com.intellij.openapi.editor.Editor
@@ -18,7 +17,6 @@ class CustomEditorFactoryListener : EditorFactoryListener {
     private val caretListenerMap : ConcurrentHashMap<Editor,SwitchIMECaretListener> = MyMap.caretListenerMap
     private val editorPsiFileMap : ConcurrentHashMap<Editor,PsiFile> = MyMap.editorPsiFileMap
     private val psiFileMap : ConcurrentHashMap<PsiFile, Editor> = MyMap.psiFileEditorMap
-    private val psiElementLocationMap : ConcurrentHashMap<Editor, PsiElementLocation> = MyMap.psiElementLocationMap
     private val documentListenerMap : ConcurrentHashMap<Editor, DocumentChangeCountListener> = MyMap.documentListenerMap
 
     // editor 是 文本编辑器
@@ -34,8 +32,6 @@ class CustomEditorFactoryListener : EditorFactoryListener {
             editorPsiFileMap[event.editor] = psiFile
             // 缓存 PsiFile -> Editor 映射关系
             psiFileMap[psiFile] = event.editor
-            // 缓存 PsiElementLocation
-            psiElementLocationMap[event.editor] = PsiElementLocation()
             // 缓存 DocumentListener
             documentListenerMap[event.editor] = documentListener
             // 添加自定义的 CaretListener
@@ -62,8 +58,6 @@ class CustomEditorFactoryListener : EditorFactoryListener {
         }
         // 删除 Editor -> PsiFile 缓存
         editorPsiFileMap.remove(event.editor)
-        // 删除 PsiElementLocation 缓存
-        psiElementLocationMap.remove(event.editor)
         // 删除 DocumentListener 缓存
         documentListenerMap.remove(event.editor)
         // 删除自定义的 CaretListener
@@ -82,9 +76,22 @@ class CustomEditorFactoryListener : EditorFactoryListener {
 
     class FocusListener : FocusChangeListener {
 
-        override fun focusLost(editor: Editor) {
-            // 编辑器失去焦点时重置PsiElementLocation
-            MyMap.psiElementLocationMap[editor]?.reset()
+        // 有了 focusGained 和 全局唯一的PsiElementLocation 这个似乎没啥用了
+//        override fun focusLost(editor: Editor) {
+//            // 编辑器失去焦点时重置PsiElementLocation
+//            MyMap.psiElementLocationMap[editor]?.reset()
+//        }
+
+        /**
+         * 编辑器获得焦点时强制进行输入法切换
+         * windows：
+         *  官方输入法自带应用间状态保存和恢复功能，故无需考虑在离开IDEA后切换输入法，再回到IDEA编辑器可能的输入法不正确情况（主要是注释区和字符串常量区目前没有强制进行输入法切换）
+         *  但是在IDEA编辑器之外如左侧文件导航区域进行了输入法切换，再回到编辑器时，如果当前光标处于注释区，则没有进行输入法切换，原因如上
+         *  暂时将 注释区和字符串常量区 的输入法强制切换加上（目前只有 focusGained 会在进入注释区和字符串常量区时进行输入法强制切换），后续看有没有问题
+         * macos 未知
+         */
+        override fun focusGained(editor: Editor) {
+            AutoSwitchIMEService.handleWhenEditorFocusGained(editor)
         }
     }
 

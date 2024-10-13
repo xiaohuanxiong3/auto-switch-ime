@@ -1,5 +1,7 @@
-package com.friday.plugins.auto_switch_ime
+package com.friday.plugins.auto_switch_ime.trigger
 
+import com.friday.plugins.auto_switch_ime.CustomEditorFactoryListener
+import com.friday.plugins.auto_switch_ime.MyMap
 import com.friday.plugins.auto_switch_ime.language.PsiFileLanguage
 import com.friday.plugins.auto_switch_ime.service.AutoSwitchIMEService
 import com.intellij.openapi.actionSystem.*
@@ -9,8 +11,10 @@ import java.util.concurrent.ConcurrentHashMap
 
 class DocumentChangedAnActionListener : AnActionListener {
 
-    private val documentListenerMap : ConcurrentHashMap<Editor, CustomEditorFactoryListener.DocumentChangeCountListener> = MyMap.documentListenerMap
-    private val caretListenerMap : ConcurrentHashMap<Editor, CustomEditorFactoryListener.SwitchIMECaretListener> = MyMap.caretListenerMap
+    private val documentListenerMap : ConcurrentHashMap<Editor, CustomEditorFactoryListener.DocumentChangeCountListener> =
+        MyMap.documentListenerMap
+    private val caretListenerMap : ConcurrentHashMap<Editor, CustomEditorFactoryListener.SwitchIMECaretListener> =
+        MyMap.caretListenerMap
 
 //    private val log : Logger = LoggerFactory.getLogger(DocumentChangedAnActionListener::class.java)
 
@@ -37,6 +41,7 @@ class DocumentChangedAnActionListener : AnActionListener {
         }
     }
 
+    // 使用beforeEditorTyping理由：由于需要判断在进行字符输入时是否有选择内容，而 afterEditorTyping 处理之前选择内容已经被清除
     override fun beforeEditorTyping(c: Char, dataContext: DataContext) {
         dataContext.getData(CommonDataKeys.PSI_FILE)?.let { psiFile ->
             if (!PsiFileLanguage.isLanguageAutoSwitchEnabled(psiFile.language)) {

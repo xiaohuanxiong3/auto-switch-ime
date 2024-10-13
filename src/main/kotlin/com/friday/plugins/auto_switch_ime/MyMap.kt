@@ -27,8 +27,11 @@ class MyMap {
          * 存储editor 和 editor中上一次光标移动触发输入法切换时 光标所在的位置 对应的psiElement 对应的PsiElementLocation
          */
 //        val psiElementLocationMap : ConcurrentHashMap<Editor, PsiElementLocation> = ApplicationManager.getApplication().getService(EditorPsiElementLocationMap::class.java)
-        val psiElementLocationMap : ConcurrentHashMap<Editor, PsiElementLocation> = ConcurrentHashMap<Editor, PsiElementLocation>()
-
+//        val psiElementLocationMap : ConcurrentHashMap<Editor, PsiElementLocation> = ConcurrentHashMap<Editor, PsiElementLocation>()
+        /**
+         * 全局唯一的 PsiElementLocation
+         */
+        val psiElementLocation : PsiElementLocation = PsiElementLocation()
         /**
          * 存储editor和 自定义的 documentListener的映射关系
          */

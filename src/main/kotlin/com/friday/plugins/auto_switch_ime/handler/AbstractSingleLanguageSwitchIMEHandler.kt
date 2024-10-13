@@ -10,14 +10,12 @@ import com.friday.plugins.auto_switch_ime.trigger.IMESwitchTrigger.*
 import com.friday.plugins.auto_switch_ime.util.ApplicationUtil
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.editor.actions.BackspaceAction
 import com.intellij.openapi.editor.actions.EnterAction
 import com.intellij.psi.PsiElement
-import java.util.concurrent.ConcurrentHashMap
 
 abstract class AbstractSingleLanguageSwitchIMEHandler : SingleLanguageSwitchIMEHandler {
 
-    private val psiElementLocationMap : ConcurrentHashMap<Editor, PsiElementLocation> = MyMap.psiElementLocationMap
+    private val psiElementLocation : PsiElementLocation = MyMap.psiElementLocation
 
     override fun handle(
         trigger: IMESwitchTrigger,
@@ -31,6 +29,7 @@ abstract class AbstractSingleLanguageSwitchIMEHandler : SingleLanguageSwitchIMEH
             MOUSE_CLICKED.description -> handleWhenMouseClicked(handleStrategy, editor, psiElement, isLineEnd)
             ARROW_KEYS_PRESSED.description -> handleWhenArrowKeysPressed(handleStrategy, editor, psiElement, isLineEnd)
             AN_ACTION_HAPPENED.description -> handleWhenAnActionHappened(handleStrategy, editor, psiElement, isLineEnd)
+            EDITOR_FOCUS_GAINED.description -> updatePsiElementLocationAndSwitch(editor, psiElement, isLineEnd, forceSwitchInOtherLocation = true, forceSwitchInSecondLanguageEnabledLocation = true)
             else -> {
                 throw Error(Constants.UNREACHABLE_CODE + "in SingleLanguageSwitchIMEHandler.handle method")
             }
@@ -55,10 +54,6 @@ abstract class AbstractSingleLanguageSwitchIMEHandler : SingleLanguageSwitchIMEH
                 }
     }
 
-    private fun isDoNotForceSwitchAction(action: AnAction) : Boolean {
-        return action is BackspaceAction
-    }
-
     private fun isForceSwitchAction(action: AnAction) : Boolean {
         return action is EnterAction
     }
@@ -78,19 +73,17 @@ abstract class AbstractSingleLanguageSwitchIMEHandler : SingleLanguageSwitchIMEH
     }
 
     override fun updatePsiElementLocation(editor: Editor, curPsiElement: PsiElement, isLineEnd: Boolean) {
-        val psiElementLocation = psiElementLocationMap[editor]!!
         val curPsiElementLocation = AreaDeciderDelegate.getPsiElementLocation(getLanguage(), curPsiElement, editor.caretModel.offset, isLineEnd)
         psiElementLocation.copyFrom(curPsiElementLocation)
     }
 
-    override fun updatePsiElementLocationAndSwitch(editor: Editor, curPsiElement: PsiElement, isLineEnd : Boolean, forceSwitch : Boolean) {
-        val psiElementLocation = psiElementLocationMap[editor]!!
+    override fun updatePsiElementLocationAndSwitch(editor: Editor, curPsiElement: PsiElement, isLineEnd : Boolean, forceSwitchInOtherLocation : Boolean, forceSwitchInSecondLanguageEnabledLocation: Boolean) {
         val curPsiElementLocation = AreaDeciderDelegate.getPsiElementLocation(getLanguage(), curPsiElement, editor.caretModel.offset, isLineEnd)
         // 初始状态，直接返回
         if (curPsiElementLocation.isInitState()) return
         // 位于其他区域
         if (curPsiElementLocation.isInOtherLocation()) {
-            if (forceSwitch || !psiElementLocation.isInOtherLocation()) {
+            if (forceSwitchInOtherLocation || !psiElementLocation.isInOtherLocation()) {
                 doSwitchWhenInOtherLocation()
             }
             if (!psiElementLocation.isInOtherLocation()) {
@@ -100,7 +93,7 @@ abstract class AbstractSingleLanguageSwitchIMEHandler : SingleLanguageSwitchIMEH
             // 判断当前location是否和上一location相同。
             // 如果相同，则不进行任何操作，由用户自己操作
             // 否则，根据策略进行输入法切换
-            if (!curPsiElementLocation.equal(psiElementLocation)) {
+            if (forceSwitchInSecondLanguageEnabledLocation || !curPsiElementLocation.equal(psiElementLocation)) {
                 doSwitch(curPsiElementLocation)
                 psiElementLocation.copyFrom(curPsiElementLocation)
             }

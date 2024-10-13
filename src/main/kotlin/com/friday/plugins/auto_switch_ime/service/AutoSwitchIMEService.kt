@@ -29,7 +29,7 @@ object AutoSwitchIMEService {
     private val caretListenerMap : ConcurrentHashMap<Editor, CustomEditorFactoryListener.SwitchIMECaretListener> = MyMap.caretListenerMap
     private val editorPsiFileMap : ConcurrentHashMap<Editor, PsiFile> = MyMap.editorPsiFileMap
     private val psiFileEditorMap : ConcurrentHashMap<PsiFile, Editor> = MyMap.psiFileEditorMap
-    private val psiElementLocationMap : ConcurrentHashMap<Editor, PsiElementLocation> = MyMap.psiElementLocationMap
+    private val psiElementLocation : PsiElementLocation = MyMap.psiElementLocation
     private val logger : Logger = Logger.getInstance(AutoSwitchIMEService::class.java)
 
     fun prepareWithNoPsiFileChanged(editor: Editor) {
@@ -135,26 +135,23 @@ object AutoSwitchIMEService {
         }
     }
 
-    @Deprecated("有更好的解决方案了")
-    fun handleWithPsiFileChanged(psiFile: PsiFile) {
-        checkAndHandleCache(psiFile)
-        psiFileEditorMap[psiFile]?.let { editor ->
-            val language = psiFile.language
-            val psiElement = psiFile.findElementAt(editor.caretModel.offset)
-            // 如果 psiElement为null
-            if (psiElement == null) {
-                handleWhenNullPsiElement(editor,language)
-                return
+    fun handleWhenEditorFocusGained(editor: Editor) {
+        checkAndHandleCache(editor)
+        ApplicationUtil.invokeLater {
+            editorPsiFileMap[editor]?.let { psiFile ->
+                val language = psiFile.language
+                if (!PsiFileLanguage.isLanguageAutoSwitchEnabled(language)) {
+                    return@invokeLater
+                }
+                val psiElement = psiFile.findElementAt(editor.caretModel.offset)
+                // 如果 psiElement为null
+                if (psiElement == null) {
+                    handleWhenNullPsiElement(editor,language)
+                    return@invokeLater
+                }
+                val isLineEnd = isLineEnd(editor.caretModel.offset, psiElement)
+                SingleLanguageSwitchIMEDelegate.handle(language, IMESwitchTrigger.EDITOR_FOCUS_GAINED, HandleStrategy.UPDATE_LOCATION_AND_FORCE_SWITCH, editor, psiElement, isLineEnd)
             }
-            val isLineEnd = isLineEnd(editor.caretModel.offset, psiElement)
-            SingleLanguageSwitchIMEDelegate.handle(
-                language,
-                IMESwitchTrigger.PSI_FILE_CHANGED,
-                HandleStrategy.UPDATE_LOCATION_AND_SWITCH,
-                editor,
-                psiElement,
-                isLineEnd
-            )
         }
     }
 
@@ -198,7 +195,7 @@ object AutoSwitchIMEService {
                 editorPsiFileMap[it] = psiFile
                 psiFileEditorMap[psiFile] = it
                 // 重置 PsiElementLocation
-                psiElementLocationMap[it] = PsiElementLocation()
+                psiElementLocation.reset()
             }
         }
     }
@@ -214,7 +211,7 @@ object AutoSwitchIMEService {
                     editorPsiFileMap[editor] = file
                     psiFileEditorMap[file] = editor
                     // 重置 PsiElementLocation
-                    psiElementLocationMap[editor] = PsiElementLocation()
+                    psiElementLocation.reset()
                 }
             }
         }
