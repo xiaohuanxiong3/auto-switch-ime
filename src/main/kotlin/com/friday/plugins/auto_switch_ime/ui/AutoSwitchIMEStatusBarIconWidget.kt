@@ -7,6 +7,7 @@ import com.friday.plugins.auto_switch_ime.util.EditorUtil
 import com.intellij.openapi.fileEditor.FileEditorManagerEvent
 import com.intellij.openapi.fileEditor.FileEditorManagerListener
 import com.intellij.openapi.fileEditor.TextEditor
+import com.intellij.openapi.fileTypes.LanguageFileType
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.IconLoader
 import com.intellij.openapi.wm.StatusBar
@@ -62,8 +63,10 @@ class AutoSwitchIMEStatusBarIconWidget(project: Project) : EditorBasedWidget(pro
                         }
                         event.newEditor?.let {
                             it as? TextEditor
-                        }?.let {
-                            setStatus(PsiFileLanguage.getEditorStatusBarWidgetStatus(it.editor))
+                        }?.editor?.virtualFile?.fileType?.let {
+                            it as? LanguageFileType
+                        }?.language?.let { language ->
+                            setStatus(PsiFileLanguage.getLanguageAutoSwitchStatus(language))
                         }
                     }
                 }
@@ -73,15 +76,26 @@ class AutoSwitchIMEStatusBarIconWidget(project: Project) : EditorBasedWidget(pro
     inner class IconPresentation : StatusBarWidget.IconPresentation {
 
         override fun getIcon(): Icon? {
-            return getFocusedEditor()?.let { editor ->
-                     currentStatus = PsiFileLanguage.getEditorStatusBarWidgetStatus(editor)
-                     when(currentStatus) {
-                         ENABLE -> iconCache[ENABLE]
-                         DISABLE -> iconCache[DISABLE]
-                         DEACTIVATE -> iconCache[DEACTIVATE]
-                         else -> null
+            return  getFocusedEditor()?.virtualFile?.fileType?.let {
+                        it as? LanguageFileType
+                    }?.language?.let { language ->
+                        currentStatus = PsiFileLanguage.getLanguageAutoSwitchStatus(language)
+                        when(currentStatus) {
+                            ENABLE -> iconCache[ENABLE]
+                            DISABLE -> iconCache[DISABLE]
+                            DEACTIVATE -> iconCache[DEACTIVATE]
+                            else -> null
+                        }
                     }
-                }
+//            return getFocusedEditor()?.let { editor ->
+//                     currentStatus = PsiFileLanguage.getEditorStatusBarWidgetStatus(editor)
+//                     when(currentStatus) {
+//                         ENABLE -> iconCache[ENABLE]
+//                         DISABLE -> iconCache[DISABLE]
+//                         DEACTIVATE -> iconCache[DEACTIVATE]
+//                         else -> null
+//                    }
+//                }
         }
 
         override fun getTooltipText(): String? {
