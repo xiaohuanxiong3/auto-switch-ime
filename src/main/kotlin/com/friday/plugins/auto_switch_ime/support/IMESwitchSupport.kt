@@ -1,5 +1,6 @@
 package com.friday.plugins.auto_switch_ime.support
 
+import com.friday.plugins.auto_switch_ime.support.IMEStatus.*
 import com.sun.jna.Library
 import com.sun.jna.Native
 import com.sun.jna.Platform
@@ -7,6 +8,8 @@ import com.sun.jna.Platform
 object IMESwitchSupport {
 
     interface IMEWin : Library {
+        fun isEn() : Boolean
+
         fun switchToZh(seq : Int)
 
         fun switchToEn(seq : Int)
@@ -21,11 +24,11 @@ object IMESwitchSupport {
 //        System.setProperty("jna.debug_load", "true")
 //    }
 
-    val LIBRARYWin = if (Platform.isWindows()) Native.load("libswitchIMEWin.dll", IMEWin::class.java)
+    val LIBRARYWin = if (Platform.isWindows()) Native.load("windows/libswitchIMEWin.dll", IMEWin::class.java)
     else null
 
     val LIBRARYMac =
-        if (Platform.isMac()) Native.load("libswitchIMEMac.dylib", IMEMac::class.java)
+        if (Platform.isMac()) Native.load("macos/libswitchIMEMac.dylib", IMEMac::class.java)
         else null
 
     val toEnId = "com.apple.keylayout.ABC"
@@ -39,13 +42,35 @@ object IMESwitchSupport {
     // 那@Volatile感觉没有必要
     var seq : Int = 0
 
-    fun switchToZh(seq: Int) {
+    // 这里没有判断具体的输入法
+    // 所以在windows端使用微软输入法之外的输入法以及mac端使用系统输入法之外的输入法可能会出问题
+    fun switchTo(seq: Int, imeStatus: IMEStatus) {
         when(Platform.getOSType()) {
             Platform.WINDOWS -> {
-                LIBRARYWin!!.switchToZh(seq)
+                when (imeStatus) {
+                    EN -> {
+                        LIBRARYWin!!.switchToEn(seq)
+                    }
+                    OTHER -> {
+                        LIBRARYWin!!.switchToZh(seq)
+                    }
+                    NONE -> {
+
+                    }
+                }
             }
             Platform.MAC -> {
-                LIBRARYMac!!.switchTo(toZhId)
+                when (imeStatus) {
+                    EN -> {
+                        LIBRARYMac!!.switchTo(toEnId)
+                    }
+                    OTHER -> {
+                        LIBRARYMac!!.switchTo(toZhId)
+                    }
+                    NONE -> {
+
+                    }
+                }
             }
             else -> {
                 throw AssertionError("未知操作系统!")
@@ -53,13 +78,13 @@ object IMESwitchSupport {
         }
     }
 
-    fun switchToEn(seq: Int) {
-        when(Platform.getOSType()) {
+    fun getImeStatus() : IMEStatus {
+        return when (Platform.getOSType()) {
             Platform.WINDOWS -> {
-                LIBRARYWin!!.switchToEn(seq)
+                if (LIBRARYWin!!.isEn()) EN else OTHER
             }
             Platform.MAC -> {
-                LIBRARYMac!!.switchTo(toEnId)
+                EN
             }
             else -> {
                 throw AssertionError("未知操作系统!")

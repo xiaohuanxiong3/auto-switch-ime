@@ -1,6 +1,7 @@
 package com.friday.plugins.auto_switch_ime.listener
 
 import com.friday.plugins.auto_switch_ime.setting.SwitchIMESettings
+import com.friday.plugins.auto_switch_ime.support.IMEStatus
 import com.friday.plugins.auto_switch_ime.support.IMESwitchSupport
 import com.friday.plugins.auto_switch_ime.util.ApplicationUtil
 import com.intellij.find.actions.FindInPathAction
@@ -14,7 +15,8 @@ class CursorFirstInSomeWindowActionListener : AnActionListener {
     override fun beforeActionPerformed(action: AnAction, event: AnActionEvent) {
         if (isTargetAction(action) && SwitchIMESettings.instance.switchToEnWhenCursorFirstInSomeWindow) {
             ApplicationUtil.executeOnPooledThread {
-                IMESwitchSupport.switchToEn(++IMESwitchSupport.seq)
+                IMESwitchSupport.switchTo(++IMESwitchSupport.seq, IMEStatus.EN)
+//                IMESwitchSupport.switchToEn(++IMESwitchSupport.seq)
             }
         }
     }

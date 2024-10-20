@@ -76,11 +76,11 @@ class CustomEditorFactoryListener : EditorFactoryListener {
 
     class FocusListener : FocusChangeListener {
 
-        // 有了 focusGained 和 全局唯一的PsiElementLocation 这个似乎没啥用了
-//        override fun focusLost(editor: Editor) {
-//            // 编辑器失去焦点时重置PsiElementLocation
-//            MyMap.psiElementLocationMap[editor]?.reset()
-//        }
+        // 编辑器失去焦点时保存编辑器的输入法状态，尝试实现失败，难度较大
+        override fun focusLost(editor: Editor) {
+            //
+//            MyMap.editorIMEStatusMap[editor] = IMESwitchSupport.getImeStatus()
+        }
 
         /**
          * 编辑器获得焦点时强制进行输入法切换

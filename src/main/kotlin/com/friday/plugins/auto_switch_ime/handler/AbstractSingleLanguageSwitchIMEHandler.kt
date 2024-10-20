@@ -4,6 +4,7 @@ import com.friday.plugins.auto_switch_ime.Constants
 import com.friday.plugins.auto_switch_ime.MyMap
 import com.friday.plugins.auto_switch_ime.areaDecide.AreaDeciderDelegate
 import com.friday.plugins.auto_switch_ime.areaDecide.PsiElementLocation
+import com.friday.plugins.auto_switch_ime.support.IMEStatus
 import com.friday.plugins.auto_switch_ime.support.IMESwitchSupport
 import com.friday.plugins.auto_switch_ime.trigger.IMESwitchTrigger
 import com.friday.plugins.auto_switch_ime.trigger.IMESwitchTrigger.*
@@ -29,7 +30,14 @@ abstract class AbstractSingleLanguageSwitchIMEHandler : SingleLanguageSwitchIMEH
             MOUSE_CLICKED.description -> handleWhenMouseClicked(handleStrategy, editor, psiElement, isLineEnd)
             ARROW_KEYS_PRESSED.description -> handleWhenArrowKeysPressed(handleStrategy, editor, psiElement, isLineEnd)
             AN_ACTION_HAPPENED.description -> handleWhenAnActionHappened(handleStrategy, editor, psiElement, isLineEnd)
-            EDITOR_FOCUS_GAINED.description -> updatePsiElementLocationAndSwitch(editor, psiElement, isLineEnd, forceSwitchInOtherLocation = true, forceSwitchInSecondLanguageEnabledLocation = true)
+            EDITOR_FOCUS_GAINED.description -> {
+                // 编辑器获得焦点时，更新psiElementLocation信息
+                updatePsiElementLocation(editor, psiElement, isLineEnd)
+                // 恢复离开时的输入法状态
+//                ApplicationUtil.executeOnPooledThread {
+//                    MyMap.editorIMEStatusMap[editor]?.let { IMESwitchSupport.switchTo(++IMESwitchSupport.seq, it) }
+//                }
+            }
             else -> {
                 throw Error(Constants.UNREACHABLE_CODE + "in SingleLanguageSwitchIMEHandler.handle method")
             }
@@ -106,18 +114,21 @@ abstract class AbstractSingleLanguageSwitchIMEHandler : SingleLanguageSwitchIMEH
         }
         if (psiElementLocation.switchToSecondLanguageWhenFirstInThisLocation) {
             ApplicationUtil.executeOnPooledThread {
-                IMESwitchSupport.switchToZh(++IMESwitchSupport.seq)
+//                IMESwitchSupport.switchToZh(++IMESwitchSupport.seq)
+                IMESwitchSupport.switchTo(++IMESwitchSupport.seq, IMEStatus.OTHER)
             }
         } else {
             ApplicationUtil.executeOnPooledThread {
-                IMESwitchSupport.switchToEn(++IMESwitchSupport.seq)
+//                IMESwitchSupport.switchToEn(++IMESwitchSupport.seq)
+                IMESwitchSupport.switchTo(++IMESwitchSupport.seq, IMEStatus.EN)
             }
         }
     }
 
     private fun doSwitchWhenInOtherLocation() {
         ApplicationUtil.executeOnPooledThread {
-            IMESwitchSupport.switchToEn(++IMESwitchSupport.seq)
+//            IMESwitchSupport.switchToEn(++IMESwitchSupport.seq)
+            IMESwitchSupport.switchTo(++IMESwitchSupport.seq, IMEStatus.EN)
         }
     }
 }

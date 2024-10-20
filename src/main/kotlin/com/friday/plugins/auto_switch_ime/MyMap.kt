@@ -1,6 +1,7 @@
 package com.friday.plugins.auto_switch_ime
 
 import com.friday.plugins.auto_switch_ime.areaDecide.PsiElementLocation
+import com.friday.plugins.auto_switch_ime.support.IMEStatus
 import com.intellij.openapi.editor.Editor
 import com.intellij.psi.PsiFile
 import java.util.concurrent.ConcurrentHashMap
@@ -32,6 +33,10 @@ class MyMap {
          * 全局唯一的 PsiElementLocation
          */
         val psiElementLocation : PsiElementLocation = PsiElementLocation()
+        /**
+         * 存储editor及离开editor时的输入法状态
+         */
+        val editorIMEStatusMap : ConcurrentHashMap<Editor, IMEStatus> = ConcurrentHashMap<Editor, IMEStatus>()
         /**
          * 存储editor和 自定义的 documentListener的映射关系
          */

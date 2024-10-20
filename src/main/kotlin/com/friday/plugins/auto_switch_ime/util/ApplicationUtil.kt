@@ -17,4 +17,7 @@ object ApplicationUtil {
         application.invokeLater(runnable)
     }
 
+    fun runReadAction(runnable: () -> Unit) {
+        application.runReadAction(runnable)
+    }
 }
