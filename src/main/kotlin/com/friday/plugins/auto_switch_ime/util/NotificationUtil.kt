@@ -11,7 +11,7 @@ object NotificationUtil {
 
     private const val MESSAGE_TITLE: String = "输入法自动切换插件"
 
-    private val notificationGroup: NotificationGroup = NotificationGroupManager.getInstance().getNotificationGroup(com.friday.plugins.auto_switch_ime.util.NotificationUtil.GROUP_ID)
+    private val notificationGroup: NotificationGroup = NotificationGroupManager.getInstance().getNotificationGroup(GROUP_ID)
 
     fun info(message: String) {
         val notification = notificationGroup.createNotification(
