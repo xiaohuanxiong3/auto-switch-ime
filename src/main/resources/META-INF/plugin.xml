@@ -23,8 +23,9 @@
     <!-- Product and plugin compatibility requirements.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
     <depends>com.intellij.modules.platform</depends>
-    <depends>com.intellij.java</depends>
-    <depends>org.jetbrains.kotlin</depends>
+    <depends optional="true" config-file="plugin-java.xml">com.intellij.java</depends>
+    <depends optional="true" config-file="plugin-kotlin.xml">org.jetbrains.kotlin</depends>
+    <depends optional="true" config-file="plugin-python.xml">com.intellij.modules.python</depends>
 
     <!-- Extension points defined by the plugin.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
@@ -43,6 +44,7 @@
                            isLogByDefault="false"/>
         <statusBarWidgetFactory implementation="com.friday.plugins.auto_switch_ime.ui.MyStatusBarWidgetFactory" id="auto-switch-ime-widget-factory"/>
         <!-- 自动切换输入法-->
+
     </extensions>
 
     <actions>

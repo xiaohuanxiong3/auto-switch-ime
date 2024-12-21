@@ -1,7 +1,7 @@
 package com.friday.plugins.auto_switch_ime.ui
 
 import com.friday.plugins.auto_switch_ime.Constants
-import com.friday.plugins.auto_switch_ime.language.PsiFileLanguage
+import com.friday.plugins.auto_switch_ime.language.LanguageSpecificTool
 import com.friday.plugins.auto_switch_ime.ui.AutoSwitchIMEStatusBarIconWidget.IconStatus.*
 import com.friday.plugins.auto_switch_ime.util.EditorUtil
 import com.intellij.openapi.fileEditor.FileEditorManagerEvent
@@ -66,7 +66,7 @@ class AutoSwitchIMEStatusBarIconWidget(project: Project) : EditorBasedWidget(pro
                         }?.editor?.virtualFile?.fileType?.let {
                             it as? LanguageFileType
                         }?.language?.let { language ->
-                            setStatus(PsiFileLanguage.getLanguageAutoSwitchStatus(language))
+                            setStatus(LanguageSpecificTool.getLanguageAutoSwitchStatus(language))
                         }
                     }
                 }
@@ -79,7 +79,7 @@ class AutoSwitchIMEStatusBarIconWidget(project: Project) : EditorBasedWidget(pro
             return  getFocusedEditor()?.virtualFile?.fileType?.let {
                         it as? LanguageFileType
                     }?.language?.let { language ->
-                        currentStatus = PsiFileLanguage.getLanguageAutoSwitchStatus(language)
+                        currentStatus = LanguageSpecificTool.getLanguageAutoSwitchStatus(language)
                         when(currentStatus) {
                             ENABLE -> iconCache[ENABLE]
                             DISABLE -> iconCache[DISABLE]
@@ -88,7 +88,7 @@ class AutoSwitchIMEStatusBarIconWidget(project: Project) : EditorBasedWidget(pro
                         }
                     }
 //            return getFocusedEditor()?.let { editor ->
-//                     currentStatus = PsiFileLanguage.getEditorStatusBarWidgetStatus(editor)
+//                     currentStatus = LanguageSpecificTool.getEditorStatusBarWidgetStatus(editor)
 //                     when(currentStatus) {
 //                         ENABLE -> iconCache[ENABLE]
 //                         DISABLE -> iconCache[DISABLE]
@@ -107,11 +107,11 @@ class AutoSwitchIMEStatusBarIconWidget(project: Project) : EditorBasedWidget(pro
                     getFocusedEditor()?.let {  editor ->
                         when (currentStatus) {
                             ENABLE -> {
-                                PsiFileLanguage.toggleIMESwitchSetting(EditorUtil.getLanguage(editor))
+                                LanguageSpecificTool.toggleIMESwitchSetting(EditorUtil.getLanguage(editor))
                                 setStatus(DISABLE)
                             }
                             DISABLE -> {
-                                PsiFileLanguage.toggleIMESwitchSetting(EditorUtil.getLanguage(editor))
+                                LanguageSpecificTool.toggleIMESwitchSetting(EditorUtil.getLanguage(editor))
                                 setStatus(ENABLE)
                             }
                             DEACTIVATE -> {

@@ -5,7 +5,7 @@ import com.friday.plugins.auto_switch_ime.MyMap
 import com.friday.plugins.auto_switch_ime.areaDecide.PsiElementLocation
 import com.friday.plugins.auto_switch_ime.handler.HandleStrategy
 import com.friday.plugins.auto_switch_ime.handler.SingleLanguageSwitchIMEDelegate
-import com.friday.plugins.auto_switch_ime.language.PsiFileLanguage
+import com.friday.plugins.auto_switch_ime.language.LanguageSpecificTool
 import com.friday.plugins.auto_switch_ime.trigger.IMESwitchTrigger
 import com.friday.plugins.auto_switch_ime.util.ApplicationUtil
 import com.friday.plugins.auto_switch_ime.util.EditorUtil
@@ -49,7 +49,7 @@ object AutoSwitchIMEService {
         checkAndHandleCache(targetEditor)
         editorPsiFileMap[editor]?.let { psiFile ->
             val language = psiFile.language
-            if (!PsiFileLanguage.isLanguageAutoSwitchEnabled(language)) {
+            if (!LanguageSpecificTool.isLanguageAutoSwitchEnabled(language)) {
                 return
             }
             val psiElement = psiFile.findElementAt(editor.caretModel.offset)
@@ -119,7 +119,7 @@ object AutoSwitchIMEService {
             editor.document.let { document ->
                 documentManager.performForCommittedDocument(document) {
                     val language = psiFile.language
-                    if (!PsiFileLanguage.isLanguageAutoSwitchEnabled(language)) {
+                    if (!LanguageSpecificTool.isLanguageAutoSwitchEnabled(language)) {
                         return@performForCommittedDocument
                     }
                     val psiElement = psiFile.findElementAt(editor.caretModel.offset)
@@ -140,7 +140,7 @@ object AutoSwitchIMEService {
         ApplicationUtil.invokeLater {
             editorPsiFileMap[editor]?.let { psiFile ->
                 val language = psiFile.language
-                if (!PsiFileLanguage.isLanguageAutoSwitchEnabled(language)) {
+                if (!LanguageSpecificTool.isLanguageAutoSwitchEnabled(language)) {
                     return@invokeLater
                 }
                 val psiElement = psiFile.findElementAt(editor.caretModel.offset)

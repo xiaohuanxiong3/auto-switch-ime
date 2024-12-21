@@ -1,7 +1,7 @@
 package com.friday.plugins.auto_switch_ime.util
 
 import com.friday.plugins.auto_switch_ime.Constants
-import com.friday.plugins.auto_switch_ime.language.PsiFileLanguage
+import com.friday.plugins.auto_switch_ime.language.LanguageSpecificTool
 import com.friday.plugins.auto_switch_ime.ui.AutoSwitchIMEStatusBarIconWidget
 import com.intellij.injected.editor.EditorWindow
 import com.intellij.lang.Language
@@ -38,7 +38,7 @@ object EditorUtil {
         editor.project?.let { project ->
             WindowManager.getInstance().getStatusBar(project).getWidget(Constants.STATUS_BAR_WIDGET_ID)?.let {
                 it as? AutoSwitchIMEStatusBarIconWidget
-            }?.setStatus(PsiFileLanguage.getLanguageAutoSwitchStatus(language))
+            }?.setStatus(LanguageSpecificTool.getLanguageAutoSwitchStatus(language))
         }
     }
 
