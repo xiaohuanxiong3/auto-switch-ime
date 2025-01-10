@@ -23,7 +23,9 @@ object JavaAreaDecider : AreaDecider {
             return psiElementLocation
         }
         // 单行注释区末尾
-        if (isLineEnd && psiElement.prevSibling != null && psiElement.prevSibling.toString() == "PsiComment(END_OF_LINE_COMMENT)") {
+        if (isLineEnd && psiElement.prevSibling != null &&
+            (psiElement.prevSibling.toString() == "PsiComment(END_OF_LINE_COMMENT)"
+                    || psiElement.prevSibling.lastChild.toString() == "PsiComment(END_OF_LINE_COMMENT)")) {
             psiElementLocation.setLocationId(psiElement.prevSibling.prevSibling,psiElement)
             psiElementLocation.isSecondLanguageEnabled = true
             psiElementLocation.doSwitchWhenFirstInThisLocation = true

@@ -1,7 +1,7 @@
 package com.friday.plugins.auto_switch_ime.language.kotlin
 
-import com.friday.plugins.auto_switch_ime.areaDecide.PsiElementLocation
 import com.friday.plugins.auto_switch_ime.areaDecide.AreaDecider
+import com.friday.plugins.auto_switch_ime.areaDecide.PsiElementLocation
 import com.intellij.lang.Language
 import com.intellij.psi.PsiDocCommentBase
 import com.intellij.psi.PsiElement
@@ -24,7 +24,9 @@ object KotlinAreaDecider : AreaDecider {
             return psiElementLocation
         }
         // 单行注释区末尾
-        if (isLineEnd && psiElement.prevSibling != null && psiElement.prevSibling.toString() == LINE_COMMENT_NAME) {
+        if (isLineEnd && psiElement.prevSibling != null &&
+            (psiElement.prevSibling.toString() == LINE_COMMENT_NAME
+                    || psiElement.prevSibling.lastChild.toString() == LINE_COMMENT_NAME)) {
             psiElementLocation.setLocationId(psiElement.prevSibling.prevSibling,psiElement)
             psiElementLocation.isSecondLanguageEnabled = true
             psiElementLocation.doSwitchWhenFirstInThisLocation = true
