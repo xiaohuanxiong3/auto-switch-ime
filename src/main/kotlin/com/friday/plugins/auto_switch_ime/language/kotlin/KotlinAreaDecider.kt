@@ -26,7 +26,7 @@ object KotlinAreaDecider : AreaDecider {
         // 单行注释区末尾
         if (isLineEnd && psiElement.prevSibling != null &&
             (psiElement.prevSibling.toString() == LINE_COMMENT_NAME
-                    || psiElement.prevSibling.lastChild.toString() == LINE_COMMENT_NAME)) {
+                    || (psiElement.prevSibling.lastChild != null && psiElement.prevSibling.lastChild.toString() == LINE_COMMENT_NAME))) {
             psiElementLocation.setLocationId(psiElement.prevSibling.prevSibling,psiElement)
             psiElementLocation.isSecondLanguageEnabled = true
             psiElementLocation.doSwitchWhenFirstInThisLocation = true
