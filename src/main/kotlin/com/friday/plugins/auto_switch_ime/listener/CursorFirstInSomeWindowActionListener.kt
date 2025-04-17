@@ -3,7 +3,6 @@ package com.friday.plugins.auto_switch_ime.listener
 import com.friday.plugins.auto_switch_ime.setting.SwitchIMESettings
 import com.friday.plugins.auto_switch_ime.support.IMEStatus
 import com.friday.plugins.auto_switch_ime.support.IMESwitchSupport
-import com.friday.plugins.auto_switch_ime.util.ApplicationUtil
 import com.intellij.find.actions.FindInPathAction
 import com.intellij.ide.actions.*
 import com.intellij.openapi.actionSystem.AnAction
@@ -14,19 +13,16 @@ class CursorFirstInSomeWindowActionListener : AnActionListener {
 
     override fun beforeActionPerformed(action: AnAction, event: AnActionEvent) {
         if (isTargetAction(action) && SwitchIMESettings.instance.switchToEnWhenCursorFirstInSomeWindow) {
-            ApplicationUtil.executeOnPooledThread {
-                IMESwitchSupport.switchTo(++IMESwitchSupport.seq, IMEStatus.EN)
+            IMESwitchSupport.switchTo(++IMESwitchSupport.seq, IMEStatus.EN)
 //                IMESwitchSupport.switchToEn(++IMESwitchSupport.seq)
-            }
         }
     }
 
     // 全局查找字符串时不起作用，初步怀疑提交的任务被吞了
+    // 2025-2-20更新：用协程也不起作用
 //    override fun afterActionPerformed(action: AnAction, event: AnActionEvent, result: AnActionResult) {
 //        if (isTargetAction(action) && SwitchIMESettings.instance.switchToEnWhenCursorFirstInSomeWindow) {
-//            ApplicationUtil.executeOnPooledThread {
-//                IMESwitchSupport.switchToEn(++IMESwitchSupport.seq)
-//            }
+//            IMESwitchSupport.switchTo(++IMESwitchSupport.seq, IMEStatus.EN)
 //        }
 //    }
 

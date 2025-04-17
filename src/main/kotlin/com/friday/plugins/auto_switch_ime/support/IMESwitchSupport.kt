@@ -4,6 +4,9 @@ import com.friday.plugins.auto_switch_ime.support.IMEStatus.*
 import com.sun.jna.Library
 import com.sun.jna.Native
 import com.sun.jna.Platform
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 object IMESwitchSupport {
 
@@ -42,38 +45,42 @@ object IMESwitchSupport {
     // 那@Volatile感觉没有必要
     var seq : Int = 0
 
+    private val ioScope = CoroutineScope(Dispatchers.IO)
+
     // 这里没有判断具体的输入法
     // 所以在windows端使用微软输入法之外的输入法以及mac端使用系统输入法之外的输入法可能会出问题
     fun switchTo(seq: Int, imeStatus: IMEStatus) {
-        when(Platform.getOSType()) {
-            Platform.WINDOWS -> {
-                when (imeStatus) {
-                    EN -> {
-                        LIBRARYWin!!.switchToEn(seq)
-                    }
-                    OTHER -> {
-                        LIBRARYWin!!.switchToZh(seq)
-                    }
-                    NONE -> {
+        ioScope.launch {
+            when(Platform.getOSType()) {
+                Platform.WINDOWS -> {
+                    when (imeStatus) {
+                        EN -> {
+                            LIBRARYWin!!.switchToEn(seq)
+                        }
+                        OTHER -> {
+                            LIBRARYWin!!.switchToZh(seq)
+                        }
+                        NONE -> {
 
+                        }
                     }
                 }
-            }
-            Platform.MAC -> {
-                when (imeStatus) {
-                    EN -> {
-                        LIBRARYMac!!.switchTo(toEnId)
-                    }
-                    OTHER -> {
-                        LIBRARYMac!!.switchTo(toZhId)
-                    }
-                    NONE -> {
+                Platform.MAC -> {
+                    when (imeStatus) {
+                        EN -> {
+                            LIBRARYMac!!.switchTo(toEnId)
+                        }
+                        OTHER -> {
+                            LIBRARYMac!!.switchTo(toZhId)
+                        }
+                        NONE -> {
 
+                        }
                     }
                 }
-            }
-            else -> {
-                throw AssertionError("未知操作系统!")
+                else -> {
+                    throw AssertionError("未知操作系统!")
+                }
             }
         }
     }

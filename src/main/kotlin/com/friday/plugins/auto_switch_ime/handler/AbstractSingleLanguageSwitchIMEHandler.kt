@@ -8,7 +8,6 @@ import com.friday.plugins.auto_switch_ime.support.IMEStatus
 import com.friday.plugins.auto_switch_ime.support.IMESwitchSupport
 import com.friday.plugins.auto_switch_ime.trigger.IMESwitchTrigger
 import com.friday.plugins.auto_switch_ime.trigger.IMESwitchTrigger.*
-import com.friday.plugins.auto_switch_ime.util.ApplicationUtil
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.actions.EnterAction
@@ -113,22 +112,16 @@ abstract class AbstractSingleLanguageSwitchIMEHandler : SingleLanguageSwitchIMEH
             return
         }
         if (psiElementLocation.switchToSecondLanguageWhenFirstInThisLocation) {
-            ApplicationUtil.executeOnPooledThread {
 //                IMESwitchSupport.switchToZh(++IMESwitchSupport.seq)
-                IMESwitchSupport.switchTo(++IMESwitchSupport.seq, IMEStatus.OTHER)
-            }
+            IMESwitchSupport.switchTo(++IMESwitchSupport.seq, IMEStatus.OTHER)
         } else {
-            ApplicationUtil.executeOnPooledThread {
 //                IMESwitchSupport.switchToEn(++IMESwitchSupport.seq)
-                IMESwitchSupport.switchTo(++IMESwitchSupport.seq, IMEStatus.EN)
-            }
+            IMESwitchSupport.switchTo(++IMESwitchSupport.seq, IMEStatus.EN)
         }
     }
 
     private fun doSwitchWhenInOtherLocation() {
-        ApplicationUtil.executeOnPooledThread {
 //            IMESwitchSupport.switchToEn(++IMESwitchSupport.seq)
-            IMESwitchSupport.switchTo(++IMESwitchSupport.seq, IMEStatus.EN)
-        }
+        IMESwitchSupport.switchTo(++IMESwitchSupport.seq, IMEStatus.EN)
     }
 }
