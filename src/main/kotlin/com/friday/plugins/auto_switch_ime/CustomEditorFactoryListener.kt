@@ -2,6 +2,7 @@ package com.friday.plugins.auto_switch_ime
 
 import com.friday.plugins.auto_switch_ime.service.AutoSwitchIMEService
 import com.friday.plugins.auto_switch_ime.trigger.MouseClickedHandler
+import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.event.*
 import com.intellij.openapi.editor.ex.FocusChangeListener
@@ -111,7 +112,7 @@ class CustomEditorFactoryListener : EditorFactoryListener {
         // 你要问我为什么这么喜欢假设，问就是不会
         override fun inputMethodTextChanged(event: InputMethodEvent?) {
             event?.let {
-                if (event.committedCharacterCount == 0 && event.text != null && editor.selectionModel.hasSelection()) {
+                if (event.committedCharacterCount == 0 && event.text != null && runReadAction { editor.selectionModel.hasSelection() } ) {
                     AutoSwitchIMEService.handleWhenSelectionUnSelected(editor)
                 }
             }
