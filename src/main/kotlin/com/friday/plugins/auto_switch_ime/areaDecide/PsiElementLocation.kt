@@ -50,6 +50,10 @@ class PsiElementLocation {
         locationId = null
     }
 
+    fun setLocationId(locationId: String) {
+        this.locationId = locationId
+    }
+
     fun setLocationId(psiElement: PsiElement) {
         locationId = psiElement.javaClass.simpleName + "@" + System.identityHashCode(psiElement)
     }

@@ -16,7 +16,8 @@ object JavaAreaDecider : AreaDecider {
         val psiElementLocation = PsiElementLocation()
         // 单行注释区
         if (psiElement.toString() == "PsiComment(END_OF_LINE_COMMENT)" && editorOffset != psiElement.textOffset) {
-            psiElementLocation.setLocationId(psiElement.prevSibling,psiElement.nextSibling)
+//            psiElementLocation.setLocationId(psiElement.prevSibling,psiElement.nextSibling)
+            psiElementLocation.setLocationId(psiElement.containingFile.name + psiElement.textOffset.toString())
             psiElementLocation.isSecondLanguageEnabled = true
             psiElementLocation.doSwitchWhenFirstInThisLocation = true
             psiElementLocation.switchToSecondLanguageWhenFirstInThisLocation = true
@@ -26,7 +27,8 @@ object JavaAreaDecider : AreaDecider {
         if (isLineEnd && psiElement.prevSibling != null &&
             (psiElement.prevSibling.toString() == "PsiComment(END_OF_LINE_COMMENT)"
                     || psiElement.prevSibling.lastChild?.toString() == "PsiComment(END_OF_LINE_COMMENT)")) {
-            psiElementLocation.setLocationId(psiElement.prevSibling.prevSibling,psiElement)
+//            psiElementLocation.setLocationId(psiElement.prevSibling.prevSibling,psiElement)
+            psiElementLocation.setLocationId(psiElement.containingFile.name + psiElement.prevSibling.textOffset.toString())
             psiElementLocation.isSecondLanguageEnabled = true
             psiElementLocation.doSwitchWhenFirstInThisLocation = true
             psiElementLocation.switchToSecondLanguageWhenFirstInThisLocation = true
@@ -35,20 +37,23 @@ object JavaAreaDecider : AreaDecider {
         // 文档注释区
         if (psiElement.parent != null) {
             if (psiElement.parent is PsiDocComment && editorOffset != psiElement.parent.textOffset) {
-                psiElementLocation.setLocationId(psiElement.parent)
+//                psiElementLocation.setLocationId(psiElement.parent)
+                psiElementLocation.setLocationId(psiElement.containingFile.name + psiElement.parent.textOffset.toString())
                 psiElementLocation.isSecondLanguageEnabled = true
                 psiElementLocation.doSwitchWhenFirstInThisLocation = true
                 psiElementLocation.switchToSecondLanguageWhenFirstInThisLocation = true
                 return psiElementLocation
             } else if (psiElement.parent.parent != null) {
                 if (psiElement.parent.parent is PsiDocComment && editorOffset != psiElement.parent.parent.textOffset) {
-                    psiElementLocation.setLocationId(psiElement.parent.parent)
+//                    psiElementLocation.setLocationId(psiElement.parent.parent)
+                    psiElementLocation.setLocationId(psiElement.containingFile.name + psiElement.parent.parent.textOffset.toString())
                     psiElementLocation.isSecondLanguageEnabled = true
                     psiElementLocation.doSwitchWhenFirstInThisLocation = true
                     psiElementLocation.switchToSecondLanguageWhenFirstInThisLocation = true
                     return psiElementLocation
                 } else if (psiElement.parent.parent.parent != null && psiElement.parent.parent.parent is PsiDocComment && editorOffset != psiElement.parent.parent.parent.textOffset) {
-                    psiElementLocation.setLocationId(psiElement.parent.parent.parent)
+//                    psiElementLocation.setLocationId(psiElement.parent.parent.parent)
+                    psiElementLocation.setLocationId(psiElement.containingFile.name + psiElement.parent.parent.parent.textOffset.toString())
                     psiElementLocation.isSecondLanguageEnabled = true
                     psiElementLocation.doSwitchWhenFirstInThisLocation = true
                     psiElementLocation.switchToSecondLanguageWhenFirstInThisLocation = true
@@ -62,7 +67,8 @@ object JavaAreaDecider : AreaDecider {
                 it as? PsiLiteralExpressionImpl
             }?.let {
                 if (ElementType.STRING_LITERALS.contains(it.literalElementType)) {
-                    psiElementLocation.setLocationId(psiElement.parent)
+//                    psiElementLocation.setLocationId(psiElement.parent)
+                    psiElementLocation.setLocationId(psiElement.containingFile.name + psiElement.parent.textOffset.toString())
                     psiElementLocation.isSecondLanguageEnabled = true
                     psiElementLocation.doSwitchWhenFirstInThisLocation = false
                     psiElementLocation.switchToSecondLanguageWhenFirstInThisLocation = false

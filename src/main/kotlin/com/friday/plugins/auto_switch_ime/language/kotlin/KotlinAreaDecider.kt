@@ -17,7 +17,8 @@ object KotlinAreaDecider : AreaDecider {
         val psiElementLocation = PsiElementLocation()
         // 单行注释区
         if (psiElement.toString() == LINE_COMMENT_NAME && editorOffset != psiElement.textOffset ) {
-            psiElementLocation.setLocationId(psiElement.prevSibling,psiElement.nextSibling)
+//            psiElementLocation.setLocationId(psiElement.prevSibling,psiElement.nextSibling)
+            psiElementLocation.setLocationId(psiElement.containingFile.name + psiElement.textOffset.toString())
             psiElementLocation.isSecondLanguageEnabled = true
             psiElementLocation.doSwitchWhenFirstInThisLocation = true
             psiElementLocation.switchToSecondLanguageWhenFirstInThisLocation = true
@@ -27,7 +28,8 @@ object KotlinAreaDecider : AreaDecider {
         if (isLineEnd && psiElement.prevSibling != null &&
             (psiElement.prevSibling.toString() == LINE_COMMENT_NAME
                     || psiElement.prevSibling.lastChild?.toString() == LINE_COMMENT_NAME)) {
-            psiElementLocation.setLocationId(psiElement.prevSibling.prevSibling,psiElement)
+//            psiElementLocation.setLocationId(psiElement.prevSibling.prevSibling,psiElement)
+            psiElementLocation.setLocationId(psiElement.containingFile.name +psiElement.prevSibling.textOffset.toString())
             psiElementLocation.isSecondLanguageEnabled = true
             psiElementLocation.doSwitchWhenFirstInThisLocation = true
             psiElementLocation.switchToSecondLanguageWhenFirstInThisLocation = true
@@ -36,7 +38,8 @@ object KotlinAreaDecider : AreaDecider {
         // 文档注释区
         val psiDocComment = PsiTreeUtil.getParentOfType(psiElement, PsiDocCommentBase::class.java)
         if (psiDocComment != null && editorOffset != psiDocComment.textOffset) {
-            psiElementLocation.setLocationId(psiDocComment)
+//            psiElementLocation.setLocationId(psiDocComment)
+            psiElementLocation.setLocationId(psiElement.containingFile.name + psiDocComment.textOffset.toString())
             psiElementLocation.isSecondLanguageEnabled = true
             psiElementLocation.doSwitchWhenFirstInThisLocation = true
             psiElementLocation.switchToSecondLanguageWhenFirstInThisLocation = true
@@ -51,7 +54,7 @@ object KotlinAreaDecider : AreaDecider {
         }
 //        ktLiteralStringTemplateEntry = getParentOfType(psiElement, KtLiteralStringTemplateEntry::class.java)
         if (ktLiteralStringTemplateEntry != null) {
-            psiElementLocation.setLocationId(PsiTreeUtil.getParentOfType(ktLiteralStringTemplateEntry, KtStringTemplateExpression::class.java)!!)
+            psiElementLocation.setLocationId(psiElement.containingFile.name + PsiTreeUtil.getParentOfType(ktLiteralStringTemplateEntry, KtStringTemplateExpression::class.java)!!.textOffset.toString())
             psiElementLocation.isSecondLanguageEnabled = true
             psiElementLocation.doSwitchWhenFirstInThisLocation = false
             psiElementLocation.switchToSecondLanguageWhenFirstInThisLocation = false

@@ -36,7 +36,7 @@ object AutoSwitchIMEService {
         try {
             caretListenerMap[EditorUtil.getEditor(editor)]!!.caretPositionChange = 0
         } catch (error : Throwable) {
-            logger.error("caught error in prepareWithNoPsiFileChanged method ${error.message}")
+            logger.info("caught error in prepareWithNoPsiFileChanged method ${error.message}")
         }
     }
 
